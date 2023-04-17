@@ -95,6 +95,7 @@
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="MineSweeperElement.h" />
+    <ClInclude Include="generateMinesweeperBoard.h" />
     <ClInclude Include="MineSweeperInput.h" />
     <ClInclude Include="Positioin.h" />
   </ItemGroup>

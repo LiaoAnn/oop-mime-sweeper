@@ -6,13 +6,14 @@
 MineSweeperElement::MineSweeperElement(MineSweeperInput* input)
 {
 	this->input = input;
+	this->value = input->value; // Set value
 	this->setParent(input->parent);
 	// Create button and adding it to the layout
 	this->setGeometry(10 + (input->position->x * 72), 20 + (input->position->y * 72), 72, 72);
 	this->show();
-	this->serialNumber  = m_objects.size();
+	this->serialNumber = m_objects.size();
 	// Connect click event
-	QObject::connect(this, &QPushButton::clicked, this, &MineSweeperElement::Click);
+	QObject::connect(this, &QPushButton::clicked, this, &MineSweeperElement::onButtonLeftClicked);
 	this->setContextMenuPolicy(Qt::CustomContextMenu); // to link menu event to button
 	connect(this, &QPushButton::customContextMenuRequested, this, &MineSweeperElement::onButtonRightClicked); // used menu event as a right click event
 	// Add to object list
@@ -25,55 +26,98 @@ MineSweeperElement::~MineSweeperElement()
 }
 
 // Click
-void MineSweeperElement::Click()
+void MineSweeperElement::onButtonLeftClicked()
 {
-	std::cout << "Click" << std::endl;
-	if (!this->isFlagged())
-	{
-		if (!this->isClicked()) // Right Click
-		{
-			int a = this->serialNumber;
-			this->setText(QString::number(a));			
-			this->setStyleSheet("background-color: #FFFFAA");
-			this->setClicked(true);
-			return;
-		}
-	}
+	if (!this->swept && !this->flagged)
+		this->sweep();
 }
-void MineSweeperElement::POP()
+void MineSweeperElement::onButtonRightClicked()
 {
-	std::cout << "Click" << std::endl;
-	if (!this->isFlagged())
+	if (!this->isSwept())
 	{
-		if (!this->isClicked()) // Right Click
-		{
-			int a = this->serialNumber;
-			this->setText(QString::number(a));
-			this->setStyleSheet("background-color: #FFFFAA");
-			this->setClicked(true);
-			return;
-		}
-	}
-}
-void MineSweeperElement::onButtonRightClicked(const QPoint& pos)
-{
-	std::cout << "Right Click" << std::endl;
-	if (!this->isClicked())
-	{
-		if (!this->isFlagged()) // Right Click
-		{
-			this->setText("F");
-			this->setStyleSheet("background-color: #AAFFAA");
-		}
+		if (!this->isFlagged())
+			flag();
 		else
-		{
-			this->setText("");
-			this->setStyleSheet("background-color: #FFFFFF");
-		}
-		this->setFlagged(!this->isFlagged());
+			unflag();
 		return;
 	}
 }
+void MineSweeperElement::sweep()
+{
+	if (this->swept == false)
+	{
+		this->swept = true;
+		this->disply();
+		this->diffusion();
+	}
+}
+void MineSweeperElement::diffusion()
+{
+	int width = 10;
+	int height = 10;
+	if (this->value == 0)
+	{
+
+		if (serialNumber % height != 0)
+			m_objects[serialNumber - 1]->sweep();
+		if (serialNumber % height != height - 1)
+			m_objects[serialNumber + 1]->sweep();
+		if (serialNumber >= height)
+			m_objects[serialNumber - height]->sweep();
+		if (serialNumber < height * (width - 1))
+			m_objects[serialNumber + height]->sweep();
+	}
+}
+void MineSweeperElement::flag()
+{
+
+	this->setStyleSheet("border: 1px solid gray; border-radius: 5px; background-color: #FF0000;");
+	this->setText("F");
+	this->setFlagged(true);
+}
+void MineSweeperElement::unflag()
+{
+	this->setStyleSheet("");
+	this->setText(" ");
+	this->setFlagged(false);
+}
+
+void MineSweeperElement::disply()
+{
+	this->setText(QString::number(this->value));
+	if (this->value == 1)
+	{
+		setTextColor("#006aff");
+		setBackGroundColor("#adcfff");
+	}
+	if (this->value == 2)
+	{
+		setTextColor("#80ff00");
+		setBackGroundColor("#e1ffc2");
+	}
+	if (this->value == 3)
+	{
+		setTextColor("#cf0a28");
+		setBackGroundColor("#ffc7cf");
+	}
+	if (this->value == 4)
+	{
+		setTextColor("#000787");
+		setBackGroundColor("#c9ccff");
+	}
+}
+void MineSweeperElement::setBackGroundColor(QString color)
+{
+	this->backGroundColor = color;
+	this->setStyleSheet("border: 1px solid gray; border-radius: 5px; background-color: " + backGroundColor + "; color: " + textColor);
+}
+
+void MineSweeperElement::setTextColor(QString color)
+{
+	this->textColor = color;
+	this->setStyleSheet("border: 1px solid gray; border-radius: 5px; background-color: " + backGroundColor + "; color: " + textColor);
+}
+
 // Get Position
 Position* MineSweeperElement::getPosition()
 {
@@ -86,16 +130,16 @@ bool MineSweeperElement::getMine()
 	return this->input->isMine;
 }
 
-// Get Mine Text
-char MineSweeperElement::getMineText()
+// Get Value
+int MineSweeperElement::getValue()
 {
-	return this->mineText;
+	return this->value;
 }
 
 // Is Clicked
-bool MineSweeperElement::isClicked()
+bool MineSweeperElement::isSwept()
 {
-	return this->clicked;
+	return this->swept;
 }
 
 // Is Flagged
@@ -113,7 +157,7 @@ int MineSweeperElement::getSerialNumber()
 // Set Clicked
 void MineSweeperElement::setClicked(bool isClicked)
 {
-	this->clicked = isClicked;
+	this->swept = isClicked;
 }
 
 // Set Flagged

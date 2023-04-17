@@ -1,56 +1,76 @@
 #include <iostream>
-#include <string>
-#include <cstdlib>
-#include <ctime>
-#include <iomanip>
+#include "generateMinesweeperBoard.h"
 using namespace std;
-
-void generateMinesweeperBoard(char board[10][10], int width, int height, int minesCount) {
+int** generateMinesweeperBoard(int width, int height, int minesCount) {
+	// Create the board
+	int** layout = new  int* [height];
+	for (int i = 0; i < height; ++i)
+	{
+		layout[i] = new  int[width];
+		for (int j = 0; j < width; ++j) 
+		{
+			layout[i][j] = 0;
+		}
+	}
 	// Randomly generate mines
 	std::srand(std::time(nullptr));
-	for (int i = 0; i < minesCount; ++i) {
+	for (int i = 0; i < minesCount;) 
+	{
 		int x = std::rand() % width;
 		int y = std::rand() % height;
-		if (board[x][y] != '*') {
-			board[x][y] = '*';
+		if (layout[y][x] != -1) 
+		{
+			layout[y][x] = -1;
+			++i;
 		}
-		else {
-			--i;
-		}
+		else
+			continue;
 	}
 
 	// Fill in the numbers
-	for (int i = 0; i < width; ++i) {
-		for (int j = 0; j < height; ++j) {
-			if (board[i][j] == '*') {
+	for (int i = 0; i < height; ++i) 
+	{
+		for (int j = 0; j < width; ++j) 
+		{
+			if (layout[i][j] == -1)
+			{
 				continue;
 			}
-			char count = '0';
-			if (i > 0 && j > 0 && board[i - 1][j - 1] == '*') {
+			int count = 0;
+			if (i > 0 && j > 0 && layout[i - 1][j - 1] == -1) 
+			{
 				++count;
 			}
-			if (i > 0 && board[i - 1][j] == '*') {
+			if (i > 0 && layout[i - 1][j] == -1) 
+			{
 				++count;
 			}
-			if (i > 0 && j < height - 1 && board[i - 1][j + 1] == '*') {
+			if (i > 0 && j < width - 1 && layout[i - 1][j + 1] == -1)
+			{
 				++count;
 			}
-			if (j > 0 && board[i][j - 1] == '*') {
+			if (j > 0 && layout[i][j - 1] == -1) 
+			{
 				++count;
 			}
-			if (j < height - 1 && board[i][j + 1] == '*') {
+			if (j < width - 1 && layout[i][j + 1] == -1) 
+			{
 				++count;
 			}
-			if (i < width - 1 && j > 0 && board[i + 1][j - 1] == '*') {
+			if (i < height - 1 && j > 0 && layout[i + 1][j - 1] == -1)
+			{
 				++count;
 			}
-			if (i < width - 1 && board[i + 1][j] == '*') {
+			if (i < height - 1 && layout[i + 1][j] == -1)
+			{
 				++count;
 			}
-			if (i < width - 1 && j < height - 1 && board[i + 1][j + 1] == '*') {
+			if (i < height - 1 && j < width - 1 && layout[i + 1][j + 1] == -1) 
+			{
 				++count;
 			}
-			board[i][j] = count;
+			layout[i][j] = count;
 		}
 	}
+	return layout;
 }

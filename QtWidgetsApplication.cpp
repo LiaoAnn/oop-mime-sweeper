@@ -2,6 +2,7 @@
 #include "qstring.h"
 #include <iostream>
 #include "MineSweeperElement.h"
+#include "generateMinesweeperBoard.h"
 #include <algorithm>
 #include <vector>
 #include <time.h>
@@ -13,7 +14,7 @@ QtWidgetsApplication::QtWidgetsApplication(QWidget* parent)
 	: QMainWindow(parent)
 {
 	ui.setupUi(this);
-
+	int ** layout = generateMinesweeperBoard(10, 10, 10);
 	srand(time(NULL));
 	// Create vector
 	std::vector<int> mines = std::vector<int>();
@@ -30,7 +31,8 @@ QtWidgetsApplication::QtWidgetsApplication(QWidget* parent)
 			Position position = { i, j };
 			input->position = &position;
 			input->parent = this;
-			input->isMine = mines[index] >= 90;			
+			input->isMine = mines[index] >= 90;	
+			input->value = layout[i][j];
 			MineSweeperElement* element = new MineSweeperElement(input);
 		}
 	}
