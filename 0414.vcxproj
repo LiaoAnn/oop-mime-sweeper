@@ -86,6 +86,7 @@
     <QtRcc Include="QtWidgetsApplication.qrc" />
     <QtUic Include="QtWidgetsApplication.ui" />
     <QtMoc Include="QtWidgetsApplication.h" />
+    <ClCompile Include="generateMinesweeperBoard.cpp" />
     <ClCompile Include="MineSweeperElement.cpp" />
     <ClCompile Include="QtWidgetsApplication.cpp" />
     <ClCompile Include="main.cpp" />
