@@ -14,9 +14,9 @@ public:
 	void setHeight();
 	void setMines();
 private:
-	int width=1;
-	int height=1;
-	int mines=1;
+	int width=10;
+	int height=10;
+	int mines=10;
 	QSpinBox* widthBox;
 	QSpinBox* heightBox;
 	QSpinBox* minesBox;
