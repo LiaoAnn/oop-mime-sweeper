@@ -55,6 +55,18 @@
     <ClCompile Include="StartWindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="CommandLine.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CommandMode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RunMode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CommandMap.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MineSweeperInput.h">
@@ -66,12 +78,24 @@
     <ClInclude Include="generateMinesweeperBoard.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="RunMode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CommandMode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CommandMap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="MineSweeperElement.h">
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="StartWindow.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="CommandLine.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>
