@@ -1,18 +1,20 @@
 #pragma once
-
 #include <QtWidgets/QMainWindow>
+#include "QtWidgetsApplication.h"
 #include "ui_QtWidgetsApplication.h"
+#include "StartWindow.h"
 
 class QtWidgetsApplication : public QMainWindow
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    QtWidgetsApplication(QWidget *parent = nullptr);
-    ~QtWidgetsApplication();
+	QtWidgetsApplication(QWidget* parent, StartWindow* from, int width, int height, int mines);
+	~QtWidgetsApplication();
 
-    void buttonClicked();
+	void closeEvent(QCloseEvent* event);
 
 private:
-    Ui::QtWidgetsApplicationClass ui;
+	StartWindow* from;
+	Ui::QtWidgetsApplicationClass ui;
 };

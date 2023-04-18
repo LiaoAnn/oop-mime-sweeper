@@ -52,6 +52,9 @@
     <ClCompile Include="generateMinesweeperBoard.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="StartWindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MineSweeperInput.h">
@@ -66,6 +69,9 @@
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="MineSweeperElement.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="StartWindow.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>

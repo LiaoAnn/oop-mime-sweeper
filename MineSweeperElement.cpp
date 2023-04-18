@@ -1,5 +1,6 @@
 #include "./MineSweeperElement.h"
 #include "./MineSweeperInput.h"
+#include "./Positioin.h"
 #include <iostream>
 #include <vector>
 // Constructor
@@ -7,9 +8,10 @@ MineSweeperElement::MineSweeperElement(MineSweeperInput* input)
 {
 	this->input = input;
 	this->value = input->value; // Set value
+	this->position = *input->position; // Set position
 	this->setParent(input->parent);
 	// Create button and adding it to the layout
-	this->setGeometry(10 + (input->position->x * 72), 20 + (input->position->y * 72), 72, 72);
+	this->setGeometry(10 + (input->position->x * 30), 20 + (input->position->y * 30), 30, 30);
 	this->show();
 	this->serialNumber = m_objects.size();
 	// Connect click event
@@ -53,8 +55,8 @@ void MineSweeperElement::sweep()
 }
 void MineSweeperElement::diffusion()
 {
-	int width = 10;
-	int height = 10;
+	int width = m_objects[m_objects.size()-1]->position.x+1;
+	int height = m_objects[m_objects.size() - 1]->position.y + 1;
 	if (this->value == 0)
 	{
 
@@ -119,9 +121,9 @@ void MineSweeperElement::setTextColor(QString color)
 }
 
 // Get Position
-Position* MineSweeperElement::getPosition()
+Position MineSweeperElement::getPosition()
 {
-	return this->input->position;
+	return this->position;
 }
 
 // Get Mine

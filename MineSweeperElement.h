@@ -3,6 +3,7 @@
 #include "MineSweeperInput.h"
 #include "qpushbutton.h"
 #include "qstring.h"
+#include "./Positioin.h"
 #include <string>
 #include <vector>
 
@@ -18,6 +19,7 @@ private:
 	int value = 0;
 	QString textColor = "Black";
 	QString backGroundColor = "White";
+	Position position;
 public:
 	static std::vector<MineSweeperElement*> m_objects; // Store all objects
 	MineSweeperElement(MineSweeperInput* input);
@@ -31,7 +33,7 @@ public:
 	void unflag();
 	void disply();
 
-	Position* getPosition();
+	Position getPosition();
 	bool getMine();
 	bool isSwept();
 	bool isFlagged();

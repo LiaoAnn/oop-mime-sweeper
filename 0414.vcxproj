@@ -83,6 +83,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="StartWindow.cpp" />
     <QtRcc Include="QtWidgetsApplication.qrc" />
     <QtUic Include="QtWidgetsApplication.ui" />
     <QtMoc Include="QtWidgetsApplication.h" />
@@ -94,6 +95,7 @@
     <ResourceCompile Include="0414.rc" />
   </ItemGroup>
   <ItemGroup>
+    <QtMoc Include="StartWindow.h" />
     <QtMoc Include="MineSweeperElement.h" />
     <ClInclude Include="generateMinesweeperBoard.h" />
     <ClInclude Include="MineSweeperInput.h" />
