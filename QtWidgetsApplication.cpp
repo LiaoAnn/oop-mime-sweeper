@@ -1,44 +1,45 @@
 #include "QtWidgetsApplication.h"
-#include "qstring.h"
 #include <iostream>
 #include "MineSweeperElement.h"
-#include <algorithm>
-#include <vector>
-#include <time.h>
-#include <random>
-#include <chrono>
+#include "generateMinesweeperBoard.h"
+#include "StartWindow.h"
 
-QtWidgetsApplication::QtWidgetsApplication(QWidget *parent)
-    : QMainWindow(parent)
+QtWidgetsApplication::QtWidgetsApplication(QWidget* parent, StartWindow* from, int width, int height, int mines)
+	: QMainWindow(parent)
 {
-    ui.setupUi(this);
-
-	srand(time(NULL));
-	// Create vector
-	std::vector<int> mines = std::vector<int>();
-	for (int i = 0; i < 100; i++)
-		mines.push_back(i);
-	std::shuffle(mines.begin(), mines.end(), std::default_random_engine(time(NULL)));
-    // Create 10x10 matrix mine sweeper
-    for (int i = 0; i < 10; i++)
-    {
-        for (int j = 0; j < 10; j++)
-        {
-			const int index = i * 10 + j;
+	ui.setupUi(this);
+	int** layout = generateMinesweeperBoard(width, height, mines);
+	for (int i = 0; i < height; i++)
+	{
+		for (int j = 0; j < width; j++)
+		{
+			const int index = i * height + j;
 			MineSweeperInput* input = new MineSweeperInput();
-			Position position = { i, j };
+			Position position = { j, i };
 			input->position = &position;
 			input->parent = this;
-			input->isMine = mines[index] >= 90;
+			input->value = layout[i][j];
+			this->from = from;
 			MineSweeperElement* element = new MineSweeperElement(input);
 		}
 	}
+	for (int i = 0; i < height; i++)
+		free(layout[i]);
+	free(layout);
 }
 
 QtWidgetsApplication::~QtWidgetsApplication()
 {}
 
-void QtWidgetsApplication::buttonClicked()
+void QtWidgetsApplication::closeEvent(QCloseEvent* event)
 {
-	std::cout << "Button clicked" << std::endl;
+	while (MineSweeperElement::m_objects.size() > 0)
+	{
+		MineSweeperElement* element = MineSweeperElement::m_objects[0];
+		element->~MineSweeperElement();
+		MineSweeperElement::m_objects.erase(MineSweeperElement::m_objects.begin());
+	}
+
+	this->~QtWidgetsApplication();
+	from->show();
 }

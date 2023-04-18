@@ -49,6 +49,12 @@
     <ClCompile Include="MineSweeperElement.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="generateMinesweeperBoard.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="StartWindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MineSweeperInput.h">
@@ -57,9 +63,15 @@
     <ClInclude Include="Positioin.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="generateMinesweeperBoard.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="MineSweeperElement.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="StartWindow.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>

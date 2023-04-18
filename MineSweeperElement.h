@@ -3,7 +3,9 @@
 #include "MineSweeperInput.h"
 #include "qpushbutton.h"
 #include "qstring.h"
+#include "./Positioin.h"
 #include <string>
+#include <vector>
 
 class MineSweeperElement : public QPushButton
 {
@@ -11,21 +13,37 @@ class MineSweeperElement : public QPushButton
 
 private:
 	MineSweeperInput* input;
-	bool clicked = false;
+	bool swept = false;
 	bool flagged = false;
-
+	int serialNumber = 0;
+	int value = 0;
+	QString textColor = "Black";
+	QString backGroundColor = "White";
+	Position position;
 public:
+	static std::vector<MineSweeperElement*> m_objects; // Store all objects
 	MineSweeperElement(MineSweeperInput* input);
 	~MineSweeperElement();
-	void Click();
 
-	Position* getPosition();
+	void onButtonLeftClicked();
+	void onButtonRightClicked();
+	void diffusion();
+	void flag();
+	void sweep();
+	void unflag();
+	void disply();
+
+	Position getPosition();
 	bool getMine();
-	bool isClicked();
+	bool isSwept();
 	bool isFlagged();
+	int getSerialNumber();
+	int getValue();
 
 	void setClicked(bool isClicked);
 	void setFlagged(bool isFlagged);
 	void setText(QString text);
 	void setIcon(QString icon);
+	void setBackGroundColor(QString);
+	void setTextColor(QString);
 };

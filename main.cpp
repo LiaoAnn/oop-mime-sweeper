@@ -1,10 +1,10 @@
-#include "QtWidgetsApplication.h"
 #include <QtWidgets/QApplication>
+#include "StartWindow.h"
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
-    QApplication a(argc, argv);
-    QtWidgetsApplication w;
-    w.show();
-    return a.exec();
+	QApplication a(argc, argv);
+	StartWindow startWindow;
+	startWindow.show();
+	return a.exec();
 }
