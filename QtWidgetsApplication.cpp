@@ -13,9 +13,9 @@ QtWidgetsApplication::QtWidgetsApplication(QWidget* parent, StartWindow* from, i
 	{
 		for (int j = 0; j < width; j++)
 		{
-			const int index = i * width + j;
+			const int index = i * height + j;
 			MineSweeperInput* input = new MineSweeperInput();
-			Position position = { i, j };
+			Position position = { j, i };
 			input->position = &position;
 			input->parent = this;
 			input->value = layout[i][j];
@@ -23,6 +23,8 @@ QtWidgetsApplication::QtWidgetsApplication(QWidget* parent, StartWindow* from, i
 			MineSweeperElement* element = new MineSweeperElement(input);
 		}
 	}
+	for (int i = 0; i < height; i++)
+		free(layout[i]);
 	free(layout);
 }
 

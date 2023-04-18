@@ -55,19 +55,30 @@ void MineSweeperElement::sweep()
 }
 void MineSweeperElement::diffusion()
 {
-	int width = m_objects[m_objects.size()-1]->position.x+1;
+	int width = m_objects[m_objects.size() - 1]->position.x + 1;
 	int height = m_objects[m_objects.size() - 1]->position.y + 1;
 	if (this->value == 0)
 	{
-
-		if (serialNumber % height != 0)
+		if (position.x != 0)
+		{
 			m_objects[serialNumber - 1]->sweep();
-		if (serialNumber % height != height - 1)
+			if (position.y != 0)
+				m_objects[serialNumber - width - 1]->sweep();
+			if (position.y % height != height - 1)
+				m_objects[serialNumber + width - 1]->sweep();
+		}
+		if (position.x % width != width - 1)
+		{
 			m_objects[serialNumber + 1]->sweep();
-		if (serialNumber >= height)
-			m_objects[serialNumber - height]->sweep();
-		if (serialNumber < height * (width - 1))
-			m_objects[serialNumber + height]->sweep();
+			if (position.y != 0)
+				m_objects[serialNumber - width + 1]->sweep();
+			if (position.y % height != height - 1)
+				m_objects[serialNumber + width + 1]->sweep();
+		}
+		if (position.y != 0)
+			m_objects[serialNumber - width]->sweep();
+		if (position.y % height != height - 1)
+			m_objects[serialNumber + width]->sweep();
 	}
 }
 void MineSweeperElement::flag()
