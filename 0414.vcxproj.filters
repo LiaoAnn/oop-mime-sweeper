@@ -99,4 +99,9 @@
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="boom.gif">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
 </Project>

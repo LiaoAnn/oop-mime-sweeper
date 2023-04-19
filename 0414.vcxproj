@@ -109,6 +109,9 @@
     <ClInclude Include="MineSweeperInput.h" />
     <ClInclude Include="Positioin.h" />
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="boom.gif" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">
     <Import Project="$(QtMsBuild)\qt.targets" />

@@ -3,11 +3,16 @@
 #include "./Positioin.h"
 #include <iostream>
 #include <vector>
+#include <Qmessagebox>
 // Constructor
 MineSweeperElement::MineSweeperElement(MineSweeperInput* input)
 {
 	this->input = input;
 	this->value = input->value; // Set value
+	if (this->value == -1)
+		mineBlocks++;
+	else
+		safeBlocks++;
 	this->position = *input->position; // Set position
 	this->setParent(input->parent);
 	// Create button and adding it to the layout
@@ -25,32 +30,53 @@ MineSweeperElement::MineSweeperElement(MineSweeperInput* input)
 // Destructor
 MineSweeperElement::~MineSweeperElement()
 {
+	mineBlocks = 0;
+	safeBlocks = 0;
 }
 
 // Click
 void MineSweeperElement::onButtonLeftClicked()
 {
-	if (!this->swept && !this->flagged)
+	if (!this->swept && !this->flagged && !this->confused)
 		this->sweep();
 }
 void MineSweeperElement::onButtonRightClicked()
 {
-	if (!this->isSwept())
+	if (!swept)
 	{
-		if (!this->isFlagged())
-			flag();
-		else
+		if (flagged)
+		{
 			unflag();
-		return;
+			confuse();
+		}
+		else if (confused)
+		{
+			unconfuse();
+		}
+		else
+		{
+			flag();
+		}
 	}
 }
 void MineSweeperElement::sweep()
 {
-	if (this->swept == false)
+	if (this->swept == false && this->confused == false && this->flagged == false)
 	{
-		this->swept = true;
-		this->disply();
-		this->diffusion();
+
+		if (this->value == -1)
+			this->boom();
+		else
+		{
+			this->swept = true;
+			this->disply();
+			this->diffusion();
+			safeBlocks--;
+		}
+	}
+	if (safeBlocks == 0)
+	{
+		win();
 	}
 }
 void MineSweeperElement::diffusion()
@@ -94,10 +120,27 @@ void MineSweeperElement::unflag()
 	this->setText(" ");
 	this->setFlagged(false);
 }
+void MineSweeperElement::confuse()
+{
+	this->setStyleSheet("border: 1px solid gray; border-radius: 5px; background-color: #FFF000;");
+	this->setText("?");
+	this->setConfused(true);
+}
+void MineSweeperElement::unconfuse()
+{
+	this->setStyleSheet("");
+	this->setText(" ");
+	this->setConfused(false);
+}
 
 void MineSweeperElement::disply()
 {
 	this->setText(QString::number(this->value));
+	if (this->value == -1)
+	{
+		this->setIcon("boom.gif");
+		this->setText("");
+	}
 	if (this->value == 1)
 	{
 		setTextColor("#006aff");
@@ -131,6 +174,32 @@ void MineSweeperElement::setTextColor(QString color)
 	this->setStyleSheet("border: 1px solid gray; border-radius: 5px; background-color: " + backGroundColor + "; color: " + textColor);
 }
 
+void MineSweeperElement::boom()
+{
+	for (int i = 0; i < m_objects.size(); i++)
+	{
+		if (m_objects[i]->value == -1)
+			m_objects[i]->disply();
+		m_objects[i]->setDisabled(true);
+	}
+	// pop a message box
+	QMessageBox::information(this, "Boom", "You lose!");
+
+}
+
+void MineSweeperElement::win()
+{
+	for (int i = 0; i < m_objects.size(); i++)
+	{
+		m_objects[i]->setDisabled(true);
+	}
+	safeBlocks++;
+	// pop a message box
+	QMessageBox::information(input->parent, "You Win", "You Win");
+
+}
+
+
 // Get Position
 Position MineSweeperElement::getPosition()
 {
@@ -161,6 +230,12 @@ bool MineSweeperElement::isFlagged()
 	return this->flagged;
 }
 
+// Is Confused
+bool MineSweeperElement::isConfused()
+{
+	return this->confused;
+}
+
 // Get Serial Number
 int MineSweeperElement::getSerialNumber()
 {
@@ -178,6 +253,11 @@ void MineSweeperElement::setFlagged(bool isFlagged)
 {
 	this->flagged = isFlagged;
 }
+// Set Confused
+void MineSweeperElement::setConfused(bool isConfused)
+{
+	this->confused = isConfused;
+}
 
 // Set Text
 void MineSweeperElement::setText(QString text)
@@ -192,3 +272,5 @@ void MineSweeperElement::setIcon(QString icon)
 }
 
 std::vector<MineSweeperElement*> MineSweeperElement::m_objects;
+int MineSweeperElement::safeBlocks = 0;
+int MineSweeperElement::mineBlocks = 0;
