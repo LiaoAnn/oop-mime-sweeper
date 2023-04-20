@@ -12,7 +12,6 @@ class MineSweeperElement : public QPushButton
 	Q_OBJECT
 
 private:
-	MineSweeperInput* input;
 	bool swept = false;
 	bool flagged = false;
 	bool confused = false;
@@ -24,14 +23,15 @@ private:
 	QString backGroundColor = "White";
 	Position position;
 public:
-	static std::vector<MineSweeperElement*> m_objects; // Store all objects
+	static std::vector<MineSweeperElement*> m_objects;
+	// Constructor & Destructor
 	MineSweeperElement(MineSweeperInput* input);
 	~MineSweeperElement();
-
+	// Events
 	void onButtonLeftClicked();
-	void onButtonRightClicked();
-	void diffusion();
-	void sweep();
+	int onButtonRightClicked();
+	int diffusion();
+	int  sweep();
 	void flag();
 	void unflag();
 	void confuse();
@@ -39,15 +39,14 @@ public:
 	void disply();
 	void boom();
 	void win();
-
+	// Getters 
 	Position getPosition();
-	bool getMine();
 	bool isSwept();
 	bool isFlagged();
 	bool isConfused();
 	int getSerialNumber();
 	int getValue();
-
+	// Setters
 	void setClicked(bool isClicked);
 	void setFlagged(bool isFlagged);
 	void setConfused(bool isConfused);

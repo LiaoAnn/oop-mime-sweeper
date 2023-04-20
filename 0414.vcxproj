@@ -90,10 +90,10 @@
     <ClCompile Include="StartWindow.cpp" />
     <QtRcc Include="QtWidgetsApplication.qrc" />
     <QtUic Include="QtWidgetsApplication.ui" />
-    <QtMoc Include="QtWidgetsApplication.h" />
+    <QtMoc Include="GameWindow.h" />
     <ClCompile Include="generateMinesweeperBoard.cpp" />
     <ClCompile Include="MineSweeperElement.cpp" />
-    <ClCompile Include="QtWidgetsApplication.cpp" />
+    <ClCompile Include="GameWindow.cpp" />
     <ClCompile Include="main.cpp" />
     <None Include="0414.ico" />
     <ResourceCompile Include="0414.rc" />
