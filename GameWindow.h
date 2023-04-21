@@ -9,13 +9,17 @@ class GameWindow : public QMainWindow
 	Q_OBJECT
 public:
 	GameWindow(QWidget*, StartWindow*, int, int, int);
+	GameWindow(QWidget*, StartWindow*, int**, int, int);
 	~GameWindow();
 	void drawOut();
 	void closeEvent(QCloseEvent*);
 	void onButtonLeftClicked();
 	void onButtonRightClicked();
 	void showNextButton();
-	int sweep(MineSweeperElement*);
+	int buttonSweep(MineSweeperElement*);
+	int buttonDiffusion(MineSweeperElement*);
+	int buttonSign(MineSweeperElement*);
+	// print functions
 	void printGameBoard();
 	void printGameState();
 	void printGameAnswer();
@@ -28,6 +32,7 @@ private:
 	QMenu* printMenu = nullptr;
 	int** layout = nullptr;
 	MineSweeperElement*** objectList = nullptr;
+	MineSweeperElement** mineList = nullptr;
 	int mapWidth = 0;
 	int mapHeight = 0;
 	int mapMines = 0;

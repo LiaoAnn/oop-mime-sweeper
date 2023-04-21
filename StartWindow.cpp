@@ -1,4 +1,5 @@
 #include "StartWindow.h"
+#include "ui_StartWindow.h"
 #include "qpushbutton.h"
 #include "GameWindow.h"
 #include <QApplication>
@@ -11,6 +12,7 @@
 #include <QFileDialog>
 #include <qmessagebox.h>
 #include <qradiobutton.h>
+
 
 StartWindow::StartWindow(QWidget* parent) : QMainWindow(parent)
 {

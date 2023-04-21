@@ -1,6 +1,7 @@
 #include <iostream>
 #include <QTimer>
 #include <QMessageBox>
+#include <QCloseEvent>
 #include "GameWindow.h"
 #include "MineSweeperElement.h"
 #include "generateMinesweeperBoard.h"
@@ -31,6 +32,7 @@ GameWindow::GameWindow(QWidget* parent, StartWindow* from, int width, int height
 
 	layout = generateMinesweeperBoard(mapWidth, mapHeight, mines); // Generate the board
 	mapBlanks = mapWidth * mapHeight - mapMines;
+	mineList = new MineSweeperElement * [mapMines];
 	timer = new QTimer(this);
 	connect(timer, &QTimer::timeout, this, &GameWindow::showNextButton);
 	if (width * height <= 100)
@@ -50,11 +52,11 @@ GameWindow::~GameWindow()
 }
 void GameWindow::closeEvent(QCloseEvent* event)
 {
-	while (MineSweeperElement::m_objects.size() > 0)
+	if (status)
 	{
-		MineSweeperElement* element = MineSweeperElement::m_objects[0];
-		element->~MineSweeperElement();
-		MineSweeperElement::m_objects.erase(MineSweeperElement::m_objects.begin());
+		event->ignore();
+		std::cout << "<Quit> : Failed" << std::endl;
+		return;
 	}
 	for (int i = 0; i < mapHeight; i++)
 		delete objectList[i];
@@ -64,6 +66,7 @@ void GameWindow::closeEvent(QCloseEvent* event)
 }
 void  GameWindow::drawOut()
 {
+	int mineCount = 0;
 	objectList = new MineSweeperElement * *[mapHeight];
 	for (int i = 0; i < mapHeight; i++)
 	{
@@ -76,6 +79,8 @@ void  GameWindow::drawOut()
 			input->parent = this;
 			input->value = layout[i][j];
 			objectList[i][j] = new MineSweeperElement(input);
+			if (layout[i][j] == -1)
+				mineList[mineCount++] = objectList[i][j];
 			connect(objectList[i][j], &QPushButton::clicked, this, &GameWindow::onButtonLeftClicked);
 			objectList[i][j]->setContextMenuPolicy(Qt::CustomContextMenu); // to link menu event to button
 			connect(objectList[i][j], &QPushButton::customContextMenuRequested, this, &GameWindow::onButtonRightClicked);
@@ -111,15 +116,26 @@ void GameWindow::showNextButton()
 void GameWindow::onButtonLeftClicked()
 {
 	MineSweeperElement* button = qobject_cast<MineSweeperElement*>(sender());
-	int r = sweep(button);
-	openedBlanks += r;
+	if (!status)
+	{
+		std::cout << "<LeftClick " << button->getPosition().x << " " << button->getPosition().y << "> : Failed" << std::endl;
+		return;
+	}
+	if (button->isFlagged() || button->isSwept() || button->isConfused())
+	{
+		std::cout << "<LeftClick " << button->getPosition().x << " " << button->getPosition().y << "> : Failed" << std::endl;
+		return;
+	}
+	std::cout << "<LeftClick " << button->getPosition().x << " " << button->getPosition().y << "> : Success" << std::endl;
+	int returnSignal = buttonSweep(button);
+	openedBlanks += returnSignal;
+	button->setClicked(true);
 	if (openedBlanks == mapBlanks)
 	{
 		QMessageBox::information(this, "You Win", "You Win");
-		button->win();
 		status = 0;
 	}
-	if (r == -1)
+	if (returnSignal == -1)
 	{
 		QMessageBox::information(this, "You Lose", "You Lose");
 		status = 0;
@@ -128,6 +144,11 @@ void GameWindow::onButtonLeftClicked()
 void GameWindow::onButtonRightClicked()
 {
 	MineSweeperElement* button = qobject_cast<MineSweeperElement*>(sender());
+	if (!status)
+	{
+		std::cout << "<RightClick " << button->getPosition().x << " " << button->getPosition().y << "> : Failed" << std::endl;
+		return;
+	}
 	if (button->isSwept())
 	{
 		std::cout << "<RightClick " << button->getPosition().x << " " << button->getPosition().y << "> : Failed" << std::endl;
@@ -135,26 +156,86 @@ void GameWindow::onButtonRightClicked()
 	}
 	else
 	{
-		flags += button->onButtonRightClicked();
+		flags += buttonSign(button);
 		std::cout << "<RightClick " << button->getPosition().x << " " << button->getPosition().y << "> : Success" << std::endl;
 		return;
 	}
 }
-int  GameWindow::sweep(MineSweeperElement* button)
+int GameWindow::buttonSweep(MineSweeperElement* button)
+{
+	int sweptCount = 0;
+	if (button->isSwept() == false)
+	{
+		if (button->getValue() == -1)
+		{
+			button->boom();
+			for (int i = 0; i < mapMines; i++)
+				mineList[i]->disply();
+			return -1;
+		}
+		else
+		{
+			if (button->isFlagged())
+				button->unflag();
+			if (button->isConfused())
+				button->unconfuse();
+			button->setClicked(true);
+			button->disply();
+			sweptCount++;
+			sweptCount += buttonDiffusion(button);
+		}
+	}
+	return sweptCount;
+}
+int GameWindow::buttonDiffusion(MineSweeperElement* button)
+{
+	int sweptCount = 0;
+	Position position = button->getPosition();
+	if (button->getValue() == 0)
+	{
+		if (button->getPosition().x != 0)
+		{
+			sweptCount += buttonSweep(objectList[position.y][position.x - 1]);
+			if (position.y != 0)
+				sweptCount += buttonSweep(objectList[position.y - 1][position.x - 1]);
+			if (position.y % mapHeight != mapHeight - 1)
+				sweptCount += buttonSweep(objectList[position.y + 1][position.x - 1]);
+		}
+		if (position.x % mapWidth != mapWidth - 1)
+		{
+			sweptCount += buttonSweep(objectList[position.y][position.x + 1]);
+			if (position.y != 0)
+				sweptCount += buttonSweep(objectList[position.y - 1][position.x + 1]);
+			if (position.y % mapHeight != mapHeight - 1)
+				sweptCount += buttonSweep(objectList[position.y + 1][position.x + 1]);
+		}
+		if (position.y != 0)
+			sweptCount += buttonSweep(objectList[position.y - 1][position.x]);
+		if (position.y % mapHeight != mapHeight - 1)
+			sweptCount += buttonSweep(objectList[position.y + 1][position.x]);
+	}
+	return sweptCount;
+}
+int GameWindow::buttonSign(MineSweeperElement* button)
 {
 
-	if (button->isFlagged() || button->isSwept() || button->isConfused())
+	if (button->isFlagged())
 	{
-		std::cout << "<LeftClick " << button->getPosition().x << " " << button->getPosition().y << "> : Failed" << std::endl;
+		button->unflag();
+		button->confuse();
 		return 0;
+	}
+	else if (button->isConfused())
+	{
+		button->unconfuse();
+		return -1;
 	}
 	else
 	{
-		std::cout << "<LeftClick " << button->getPosition().x << " " << button->getPosition().y << "> : Success" << std::endl;
-		return button->sweep();
+		button->flag();
+		return 1;
 	}
 }
-
 void GameWindow::printGameBoard()
 {
 	std::cout << "<Print GameBoard> : " << std::endl;
@@ -164,6 +245,8 @@ void GameWindow::printGameBoard()
 		{
 			if (objectList[i][j]->isFlagged())
 				std::cout << "f ";
+			else if (objectList[i][j]->isSwept() && objectList[i][j]->getValue() < 0)
+				std::cout << "X ";
 			else if (objectList[i][j]->isSwept() && objectList[i][j]->getValue() != -1)
 				std::cout << objectList[i][j]->getValue() << " ";
 			else if (objectList[i][j]->isConfused())

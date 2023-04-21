@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "MineSweeperInput.h"
 #include "qpushbutton.h"
@@ -28,17 +28,12 @@ public:
 	MineSweeperElement(MineSweeperInput* input);
 	~MineSweeperElement();
 	// Events
-	void onButtonLeftClicked();
-	int onButtonRightClicked();
-	int diffusion();
-	int  sweep();
 	void flag();
 	void unflag();
 	void confuse();
 	void unconfuse();
 	void disply();
 	void boom();
-	void win();
 	// Getters 
 	Position getPosition();
 	bool isSwept();

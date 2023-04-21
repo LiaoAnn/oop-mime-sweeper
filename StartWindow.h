@@ -8,6 +8,7 @@
 #include <qgroupbox.h>
 #include <QLineEdit>
 #include <qradiobutton.h>
+#include "ui_StartWindow.h"
 class StartWindow : public QMainWindow
 {
 	Q_OBJECT
@@ -23,12 +24,6 @@ public:
 	void browseFile();
 	void sourceMode();
 	//void ramdomMode();
-private:
-	int width = 10;
-	int height = 10;
-	bool minesUnit = false;
-	double mines = 10;
-	int** layout = nullptr;
 	QSpinBox* widthBox;
 	QSpinBox* heightBox;
 	QDoubleSpinBox* minesBox;
@@ -39,4 +34,10 @@ private:
 	QGroupBox* groupBox;
 	QGroupBox* groupBox2;
 	Ui::QtWidgetsApplicationClass ui;
+private:
+	int width = 10;
+	int height = 10;
+	bool minesUnit = false;
+	double mines = 10;
+	int** layout = nullptr;
 };

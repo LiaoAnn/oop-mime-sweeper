@@ -96,6 +96,7 @@
     <ClCompile Include="GameWindow.cpp" />
     <ClCompile Include="main.cpp" />
     <None Include="0414.ico" />
+    <QtUic Include="StartWindow.ui" />
     <ResourceCompile Include="0414.rc" />
   </ItemGroup>
   <ItemGroup>

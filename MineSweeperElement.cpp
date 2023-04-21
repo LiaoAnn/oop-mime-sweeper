@@ -32,84 +32,6 @@ MineSweeperElement::~MineSweeperElement()
 	safeBlocks = 0;
 }
 
-// Click
-void MineSweeperElement::onButtonLeftClicked()
-{
-	if (!this->swept && !this->flagged && !this->confused)
-		this->sweep();
-}
-int MineSweeperElement::onButtonRightClicked()
-{
-	if (!swept)
-	{
-		if (flagged)
-		{			
-			unflag();
-			confuse();
-			return 0;
-		}
-		else if (confused)
-		{
-			unconfuse();
-			return -1;
-		}
-		else
-		{
-			flag();
-			return 1;
-		}
-	}
-}
-int MineSweeperElement::sweep()
-{
-	int sweptCount = 0;
-	if (this->swept == false && this->confused == false && this->flagged == false)
-	{
-		if (this->value == -1)
-		{			
-			this->boom();
-			return -1;
-		}
-		else
-		{
-			this->swept = true;
-			this->disply();
-			sweptCount++;
-			sweptCount += this->diffusion();
-		}
-	}
-	return sweptCount;
-}
-int MineSweeperElement::diffusion()
-{
-	int sweptCount = 0;
-	int width = m_objects[m_objects.size() - 1]->position.x + 1;
-	int height = m_objects[m_objects.size() - 1]->position.y + 1;
-	if (this->value == 0)
-	{
-		if (position.x != 0)
-		{
-			sweptCount += m_objects[serialNumber - 1]->sweep();
-			if (position.y != 0)
-				sweptCount+=m_objects[serialNumber - width - 1]->sweep();
-			if (position.y % height != height - 1)
-				sweptCount += m_objects[serialNumber + width - 1]->sweep();
-		}
-		if (position.x % width != width - 1)
-		{
-			sweptCount += m_objects[serialNumber + 1]->sweep();
-			if (position.y != 0)
-				sweptCount += m_objects[serialNumber - width + 1]->sweep();
-			if (position.y % height != height - 1)
-				sweptCount += m_objects[serialNumber + width + 1]->sweep();
-		}
-		if (position.y != 0)
-			sweptCount += m_objects[serialNumber - width]->sweep();
-		if (position.y % height != height - 1)
-			sweptCount += m_objects[serialNumber + width]->sweep();
-	}
-	return sweptCount;
-}
 void MineSweeperElement::flag()
 {
 	this->setStyleSheet("border: 1px solid gray; border-radius: 5px; background-color: #5555ff;");
@@ -137,16 +59,27 @@ void MineSweeperElement::unconfuse()
 
 void MineSweeperElement::disply()
 {
-	if (this->value != 0 && this->value != -1)
+	// value = -2 means boom
+	// value = -1 means mine
+	// value = 0 means empty
+	// value = 1 means 1 mine around
+	// value = 2 means 2 mine around
+	// ...
+	if (this->value>0)
 		this->setText(QString::number(this->value));
-	if (this->value == 0)
+	if (this->value == -2)
 	{
-		setBackGroundColor("#bbbbbb");
+		this->setIcon("boom.gif");
+		setBackGroundColor("#ff4444");
 	}
 	if (this->value == -1)
 	{
+		if(!flagged)
 		this->setIcon("boom.gif");
-		this->setText("");
+	}
+	if (this->value == 0)
+	{
+		setBackGroundColor("#bbbbbb");
 	}
 	if (this->value == 1)
 	{
@@ -168,6 +101,26 @@ void MineSweeperElement::disply()
 		setTextColor("#000787");
 		setBackGroundColor("#c9ccff");
 	}
+	if (this->value == 5)
+	{
+		setTextColor("#000000");
+		setBackGroundColor("#fac707");
+	}
+	if (this->value == 6)
+	{
+		setTextColor("#00ffff");
+		setBackGroundColor("#c7ffff");
+	}
+	if (this->value == 7)
+	{
+		setTextColor("#ffffff");
+		setBackGroundColor("#c7c7c7");
+	}
+	if (this->value == 8)
+	{
+		setTextColor("#808080");
+		setBackGroundColor("#e1e1e1");
+	}
 }
 void MineSweeperElement::setBackGroundColor(QString color)
 {
@@ -180,25 +133,10 @@ void MineSweeperElement::setTextColor(QString color)
 	this->textColor = color;
 	this->setStyleSheet("border: 1px solid gray; border-radius: 5px; background-color: " + backGroundColor + "; color: " + textColor);
 }
-
 void MineSweeperElement::boom()
 {
-	for (int i = 0; i < m_objects.size(); i++)
-	{
-		if (m_objects[i]->value == -1)
-			m_objects[i]->disply();
-		m_objects[i]->setDisabled(true);
-	}
+	this->value = -2;
 }
-
-void MineSweeperElement::win()
-{
-	for (int i = 0; i < m_objects.size(); i++)
-	{
-		m_objects[i]->setDisabled(true);
-	}
-}
-
 // Get Position 
 Position MineSweeperElement::getPosition()
 {
