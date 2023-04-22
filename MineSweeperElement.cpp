@@ -65,7 +65,7 @@ void MineSweeperElement::disply()
 	// value = 1 means 1 mine around
 	// value = 2 means 2 mine around
 	// ...
-	if (this->value>0)
+	if (this->value > 0)
 		this->setText(QString::number(this->value));
 	if (this->value == -2)
 	{
@@ -74,8 +74,8 @@ void MineSweeperElement::disply()
 	}
 	if (this->value == -1)
 	{
-		if(!flagged)
-		this->setIcon("boom.gif");
+		if (!flagged)
+			this->setIcon("boom.gif");
 	}
 	if (this->value == 0)
 	{

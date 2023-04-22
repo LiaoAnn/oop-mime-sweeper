@@ -1,8 +1,8 @@
 #pragma once
 #include <QMainWindow>
-#include <QtMultimedia>
+#include <QtMultimedia/QMediaPlayer>
+#include <QtMultimedia/QAudioOutput>
 #include "GameWindow.h"
-#include "ui_QtWidgetsApplication.h"
 #include "StartWindow.h"
 #include "MineSweeperElement.h"
 class GameWindow : public QMainWindow
@@ -31,7 +31,12 @@ public:
 private:
 	QTimer* timer = nullptr;
 	QMenu* printMenu = nullptr;
-	QAudioOutput* audioOutput = nullptr;
+	QMediaPlayer* bgm = nullptr;
+	QMediaPlayer* click = nullptr;
+	QMediaPlayer* boom = nullptr;
+	QAudioOutput* bgmOutput = nullptr;
+	QAudioOutput* clickOutput = nullptr;
+	QAudioOutput* boomOutput = nullptr;
 	int** layout = nullptr;
 	MineSweeperElement*** objectList = nullptr;
 	MineSweeperElement** mineList = nullptr;

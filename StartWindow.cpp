@@ -104,26 +104,28 @@ StartWindow::~StartWindow()
 }
 void StartWindow::Startgame()
 {
-	if(!canStart)
+	if (!canStart)
 		return;
-	GameWindow* window = new GameWindow(this, this,layout, width, height, mines);
+	GameWindow* window = new GameWindow(this, this, layout, width, height, mines);
 	// lock the window size
 	window->setFixedSize(window->size());
 	window->move(this->geometry().topLeft().x(), this->geometry().topLeft().y());
 	window->show();
 	window->drawOut();
+	canStart = false;
+	layout = nullptr;
 	this->hide();
 }
 void StartWindow::setWidth()
 {
 	this->width = this->widthBox->value();
-	if (minesUnit)
+	if (!minesUnit)
 		minesBox->setRange(1, width * height);
 }
 void StartWindow::setHeight()
 {
 	this->height = this->heightBox->value();
-	if (minesUnit)
+	if (!minesUnit)
 		minesBox->setRange(1, width * height);
 }
 void StartWindow::setMines()
@@ -188,17 +190,27 @@ void StartWindow::loadFile()
 			QMessageBox::warning(this, tr("Warning"), tr("File not found!"));
 			return;
 		}
-		file >>  height >> width;
-		char * *c_layout = new char*[height];
+		file >> height >> width;
+		mineUnitBox-> setCurrentIndex(0);
+		mines = 0;
+		char** c_layout = new char* [height];
 		for (int i = 0; i < height; i++)
 		{
 			c_layout[i] = new char[width];
 			for (int j = 0; j < width; j++)
 			{
 				file >> c_layout[i][j];
+				if(c_layout[i][j]=='X')
+					mines ++;
 			}
 		}
+		heightBox->setValue(height);
+		widthBox->setValue(width);
+		minesBox->setValue(mines);
 		layout = transformationMinesweeperBoard(c_layout, width, height);
+		for (int i = 0; i < height; i++)
+			delete[] c_layout[i];
+		delete[] c_layout;
 	}
 	canStart = 1;
 }

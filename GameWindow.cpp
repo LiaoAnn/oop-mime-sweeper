@@ -2,12 +2,14 @@
 #include <QTimer>
 #include <QMessageBox>
 #include <QCloseEvent>
-#include <QtMultimedia>
+#include <QtMultimedia/QMediaPlayer>
 #include "GameWindow.h"
 #include "MineSweeperElement.h"
 #include "generateMinesweeperBoard.h"
 #include "StartWindow.h"
 #include "Positioin.h"
+#include <QFile>
+#include <QTextStream>
 
 GameWindow::GameWindow(QWidget* parent, StartWindow* from, int width, int height, int mines) : QMainWindow(parent)
 {
@@ -42,13 +44,6 @@ GameWindow::GameWindow(QWidget* parent, StartWindow* from, int width, int height
 		timer->start(1);
 	else
 		timer->start(0);
-	
-	QMediaPlayer* player = new QMediaPlayer(this);
-	audioOutput = new QAudioOutput(this);
-	player->setAudioOutput(audioOutput);
-	player->setSource(QUrl::fromLocalFile("C:/123.mp3"));
-	audioOutput->setVolume(0.1);
-	player->play();
 }
 GameWindow::GameWindow(QWidget* parent, StartWindow* from, int** board, int width, int height, int mines) : QMainWindow(parent)
 {
@@ -72,6 +67,7 @@ GameWindow::GameWindow(QWidget* parent, StartWindow* from, int** board, int widt
 	foreach(QToolBar * tb, allToolBars)
 		this->removeToolBar(tb);
 	layout = board;
+	this->setWindowTitle(QString::number(mapWidth) + " " + QString::number(mapHeight) + " " + QString::number(mapMines) + " ");
 	mapBlanks = mapWidth * mapHeight - mapMines;
 	mineList = new MineSweeperElement * [mapMines];
 	timer = new QTimer(this);
@@ -82,18 +78,28 @@ GameWindow::GameWindow(QWidget* parent, StartWindow* from, int** board, int widt
 		timer->start(1);
 	else
 		timer->start(0);
-
-	QMediaPlayer* player = new QMediaPlayer(this);
-	audioOutput = new QAudioOutput(this);
-	player->setAudioOutput(audioOutput);
-	player->setSource(QUrl::fromLocalFile("bgm.mp3"));
-	audioOutput->setVolume(0.1);
-	player->play();
-
+	bgmOutput = new QAudioOutput(this);
+	bgmOutput->setVolume(0.1);
+	clickOutput = new QAudioOutput(this);
+	clickOutput->setVolume(0.1);
+	boomOutput = new QAudioOutput(this);
+	boomOutput->setVolume(0.1);
+	bgm = new QMediaPlayer(this);
+	bgm->setAudioOutput(bgmOutput);
+	bgm->setSource(QUrl::fromLocalFile("bgm.mp3"));	
+	bgm->play();
+	click = new QMediaPlayer(this);
+	click->setAudioOutput(clickOutput);
+	click->setSource(QUrl::fromLocalFile("click.wav"));
+	boom = new QMediaPlayer(this);
+	boom->setAudioOutput(boomOutput);
+	boom->setSource(QUrl::fromLocalFile("boom.wav"));
 }
 GameWindow::~GameWindow()
 {
-
+	for (int i = 0; i < mapHeight; i++)
+		delete layout[i];
+	delete layout;
 }
 void GameWindow::closeEvent(QCloseEvent* event)
 {
@@ -125,7 +131,10 @@ void  GameWindow::drawOut()
 			input->value = layout[i][j];
 			objectList[i][j] = new MineSweeperElement(input);
 			if (layout[i][j] == -1)
-				mineList[mineCount++] = objectList[i][j];
+			{
+				mineList[mineCount] = objectList[i][j];
+				mineCount++;
+			}				
 			connect(objectList[i][j], &QPushButton::clicked, this, &GameWindow::onButtonLeftClicked);
 			objectList[i][j]->setContextMenuPolicy(Qt::CustomContextMenu); // to link menu event to button
 			connect(objectList[i][j], &QPushButton::customContextMenuRequested, this, &GameWindow::onButtonRightClicked);
@@ -160,10 +169,7 @@ void GameWindow::showNextButton()
 void GameWindow::onButtonLeftClicked()
 {
 	QMediaPlayer* player = new QMediaPlayer(this);
-	audioOutput = new QAudioOutput(this);
-	player->setAudioOutput(audioOutput);
-	player->setSource(QUrl::fromLocalFile("click.wav"));
-	player->play();
+	click->play();
 	MineSweeperElement* button = qobject_cast<MineSweeperElement*>(sender());
 	if (!status)
 	{
@@ -227,10 +233,7 @@ void GameWindow::onButtonLeftClicked()
 void GameWindow::onButtonRightClicked()
 {
 	QMediaPlayer* player = new QMediaPlayer(this);
-	audioOutput = new QAudioOutput(this);
-	player->setAudioOutput(audioOutput);
-	player->setSource(QUrl::fromLocalFile("click.wav"));
-	player->play();
+	click->play();
 
 	MineSweeperElement* button = qobject_cast<MineSweeperElement*>(sender());
 	if (!status)
@@ -258,11 +261,7 @@ int GameWindow::buttonSweep(MineSweeperElement* button)
 		if (button->getValue() == -1)
 		{
 			button->boom();
-			QMediaPlayer* player = new QMediaPlayer(this);
-			audioOutput = new QAudioOutput(this);
-			player->setAudioOutput(audioOutput);
-			player->setSource(QUrl::fromLocalFile("boom.wav"));
-			player->play();
+			boom->play();
 			for (int i = 0; i < mapMines; i++)
 				mineList[i]->disply();
 			return -1;
