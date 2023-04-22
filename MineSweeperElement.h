@@ -6,22 +6,15 @@
 #include "./Positioin.h"
 #include <string>
 #include <vector>
+#include "BaseMineSweeperElement.h"
 
-class MineSweeperElement : public QPushButton
+class MineSweeperElement : public QPushButton, protected BaseMineSweeperElement
 {
 	Q_OBJECT
 
 private:
-	bool swept = false;
-	bool flagged = false;
-	bool confused = false;
-	int serialNumber = 0;
-	int value = 0;
-	static int safeBlocks;
-	static int mineBlocks;
 	QString textColor = "Black";
 	QString backGroundColor = "White";
-	Position position;
 public:
 	static std::vector<MineSweeperElement*> m_objects;
 	// Constructor & Destructor

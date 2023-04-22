@@ -265,5 +265,3 @@ void MineSweeperElement::setIcon(QString icon)
 }
 
 std::vector<MineSweeperElement*> MineSweeperElement::m_objects;
-int MineSweeperElement::safeBlocks = 0;
-int MineSweeperElement::mineBlocks = 0;
