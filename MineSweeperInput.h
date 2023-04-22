@@ -1,12 +1,9 @@
 #pragma once
 
 #include "qwidget.h"
-#include "Positioin.h"
+#include "BaseMineSweeperInput.h"
 
-struct MineSweeperInput
+struct MineSweeperInput: public BaseMineSweeperInput
 {
-	Position* position;
 	QWidget* parent = Q_NULLPTR;
-	int value;
-	bool isMine;
 };
