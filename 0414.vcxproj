@@ -83,6 +83,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="BaseMineSweeperElement.cpp" />
     <ClCompile Include="CommandLine.cpp" />
     <ClCompile Include="CommandMap.cpp" />
     <ClCompile Include="CommandMode.cpp" />
@@ -100,6 +101,7 @@
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="CommandLine.h" />
+    <ClInclude Include="BaseMineSweeperElement.h" />
     <ClInclude Include="BaseMineSweeperInput.h" />
     <ClInclude Include="CommandMap.h" />
     <ClInclude Include="CommandMode.h" />

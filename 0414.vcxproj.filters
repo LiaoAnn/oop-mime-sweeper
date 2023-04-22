@@ -67,6 +67,9 @@
     <ClCompile Include="CommandMap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="BaseMineSweeperElement.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MineSweeperInput.h">
@@ -88,6 +91,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="BaseMineSweeperInput.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseMineSweeperElement.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
