@@ -23,6 +23,7 @@ public:
 	void setMinesUnit();
 	void browseFile();
 	void sourceMode();
+	void loadFile();	
 	//void ramdomMode();
 	QSpinBox* widthBox;
 	QSpinBox* heightBox;
@@ -40,4 +41,5 @@ private:
 	bool minesUnit = false;
 	double mines = 10;
 	int** layout = nullptr;
+	bool canStart = 0;
 };

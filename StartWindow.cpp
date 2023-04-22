@@ -12,7 +12,9 @@
 #include <QFileDialog>
 #include <qmessagebox.h>
 #include <qradiobutton.h>
-
+#include "generateMinesweeperBoard.h"
+#include <fstream>
+#include <iostream>
 
 StartWindow::StartWindow(QWidget* parent) : QMainWindow(parent)
 {
@@ -92,8 +94,9 @@ StartWindow::StartWindow(QWidget* parent) : QMainWindow(parent)
 	connect(minesBox, &QDoubleSpinBox::valueChanged, this, &StartWindow::setMines);
 	connect(mineUnitBox, &QComboBox::currentIndexChanged, this, &StartWindow::setMinesUnit);
 	connect(BrowseBtn, &QPushButton::clicked, this, &StartWindow::browseFile);
-	connect( radioBtn1, &QRadioButton::clicked, this, &StartWindow::sourceMode);
+	connect(radioBtn1, &QRadioButton::clicked, this, &StartWindow::sourceMode);
 	connect(radioBtn2, &QRadioButton::clicked, this, &StartWindow::sourceMode);
+	connect(button2, &QPushButton::clicked, this, &StartWindow::loadFile);
 }
 StartWindow::~StartWindow()
 {
@@ -101,13 +104,12 @@ StartWindow::~StartWindow()
 }
 void StartWindow::Startgame()
 {
-	GameWindow* window = new GameWindow(this, this, width, height, mines);
+	if(!canStart)
+		return;
+	GameWindow* window = new GameWindow(this, this,layout, width, height, mines);
 	// lock the window size
 	window->setFixedSize(window->size());
 	window->move(this->geometry().topLeft().x(), this->geometry().topLeft().y());
-	time_t t = time(0);
-	QString Title = QString::fromStdString("build time : ") + ctime(&t);
-	window->setWindowTitle(Title);
 	window->show();
 	window->drawOut();
 	this->hide();
@@ -171,4 +173,32 @@ void StartWindow::sourceMode()
 		groupBox->setDisabled(true);
 		groupBox2->setDisabled(false);
 	}
+}
+void StartWindow::loadFile()
+{
+	if (radioBtn1->isChecked())
+	{
+		layout = generateMinesweeperBoard(width, height, mines);
+	}
+	else
+	{
+		std::ifstream file(lineEdit->text().toStdString());
+		if (!file.is_open())
+		{
+			QMessageBox::warning(this, tr("Warning"), tr("File not found!"));
+			return;
+		}
+		file >>  height >> width;
+		char * *c_layout = new char*[height];
+		for (int i = 0; i < height; i++)
+		{
+			c_layout[i] = new char[width];
+			for (int j = 0; j < width; j++)
+			{
+				file >> c_layout[i][j];
+			}
+		}
+		layout = transformationMinesweeperBoard(c_layout, width, height);
+	}
+	canStart = 1;
 }

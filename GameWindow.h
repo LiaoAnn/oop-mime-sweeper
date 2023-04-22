@@ -1,5 +1,6 @@
 #pragma once
 #include <QMainWindow>
+#include <QtMultimedia>
 #include "GameWindow.h"
 #include "ui_QtWidgetsApplication.h"
 #include "StartWindow.h"
@@ -9,7 +10,7 @@ class GameWindow : public QMainWindow
 	Q_OBJECT
 public:
 	GameWindow(QWidget*, StartWindow*, int, int, int);
-	GameWindow(QWidget*, StartWindow*, int**, int, int);
+	GameWindow(QWidget*, StartWindow*, int**, int, int, int);
 	~GameWindow();
 	void drawOut();
 	void closeEvent(QCloseEvent*);
@@ -30,6 +31,7 @@ public:
 private:
 	QTimer* timer = nullptr;
 	QMenu* printMenu = nullptr;
+	QAudioOutput* audioOutput = nullptr;
 	int** layout = nullptr;
 	MineSweeperElement*** objectList = nullptr;
 	MineSweeperElement** mineList = nullptr;
@@ -39,7 +41,7 @@ private:
 	int mapBlanks = 0;
 	int openedBlanks = 0;
 	int flags = 0;
-	bool status = true;;
+	bool status = true;
 	StartWindow* lastWindow;
 	Ui::QtWidgetsApplicationClass ui;
 };

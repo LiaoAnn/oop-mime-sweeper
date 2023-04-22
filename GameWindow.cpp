@@ -2,6 +2,7 @@
 #include <QTimer>
 #include <QMessageBox>
 #include <QCloseEvent>
+#include <QtMultimedia>
 #include "GameWindow.h"
 #include "MineSweeperElement.h"
 #include "generateMinesweeperBoard.h"
@@ -41,14 +42,58 @@ GameWindow::GameWindow(QWidget* parent, StartWindow* from, int width, int height
 		timer->start(1);
 	else
 		timer->start(0);
+	
+	QMediaPlayer* player = new QMediaPlayer(this);
+	audioOutput = new QAudioOutput(this);
+	player->setAudioOutput(audioOutput);
+	player->setSource(QUrl::fromLocalFile("C:/123.mp3"));
+	audioOutput->setVolume(0.1);
+	player->play();
 }
+GameWindow::GameWindow(QWidget* parent, StartWindow* from, int** board, int width, int height, int mines) : QMainWindow(parent)
+{
+	ui.setupUi(this);
+	// Set up the window
+	this->lastWindow = from;
+	this->mapWidth = width;
+	this->mapHeight = height;
+	this->mapMines = mines;
+	this->setFixedSize(width * 30 + 20, height * 30 + 40);
+	printMenu = this->menuBar()->addMenu("Print");
+	printMenu->addAction("GameBoard", this, &GameWindow::printGameBoard);
+	printMenu->addAction("GameState", this, &GameWindow::printGameState);
+	printMenu->addAction("GameAnswer", this, &GameWindow::printGameAnswer);
+	printMenu->addAction("BombCount", this, &GameWindow::printBombCount);
+	printMenu->addAction("FlagCount", this, &GameWindow::printFlagCount);
+	printMenu->addAction("OpenBlankCount", this, &GameWindow::printOpenBlankCount);
+	printMenu->addAction("RemainBlankCount", this, &GameWindow::printRemainBlankCount);
+	// Remove all toolbars
+	QList<QToolBar*> allToolBars = this->findChildren<QToolBar*>();
+	foreach(QToolBar * tb, allToolBars)
+		this->removeToolBar(tb);
+	layout = board;
+	mapBlanks = mapWidth * mapHeight - mapMines;
+	mineList = new MineSweeperElement * [mapMines];
+	timer = new QTimer(this);
+	connect(timer, &QTimer::timeout, this, &GameWindow::showNextButton);
+	if (width * height <= 100)
+		timer->start(2);
+	else if (width * height <= 500)
+		timer->start(1);
+	else
+		timer->start(0);
 
+	QMediaPlayer* player = new QMediaPlayer(this);
+	audioOutput = new QAudioOutput(this);
+	player->setAudioOutput(audioOutput);
+	player->setSource(QUrl::fromLocalFile("bgm.mp3"));
+	audioOutput->setVolume(0.1);
+	player->play();
+
+}
 GameWindow::~GameWindow()
 {
-	for (int i = 0; i < mapHeight; i++)
-		delete layout[i];
-	delete layout;
-	std::cout << "<Quit> : succeed" << std::endl;
+
 }
 void GameWindow::closeEvent(QCloseEvent* event)
 {
@@ -94,7 +139,6 @@ void  GameWindow::drawOut()
 			objectList[i][j]->hide();
 		}
 	}
-	// make all element visable by 0.5 second gap 
 }
 void GameWindow::showNextButton()
 {
@@ -115,6 +159,11 @@ void GameWindow::showNextButton()
 }
 void GameWindow::onButtonLeftClicked()
 {
+	QMediaPlayer* player = new QMediaPlayer(this);
+	audioOutput = new QAudioOutput(this);
+	player->setAudioOutput(audioOutput);
+	player->setSource(QUrl::fromLocalFile("click.wav"));
+	player->play();
 	MineSweeperElement* button = qobject_cast<MineSweeperElement*>(sender());
 	if (!status)
 	{
@@ -132,17 +181,57 @@ void GameWindow::onButtonLeftClicked()
 	button->setClicked(true);
 	if (openedBlanks == mapBlanks)
 	{
-		QMessageBox::information(this, "You Win", "You Win");
 		status = 0;
+		QMessageBox* messageBox = new QMessageBox(
+			QMessageBox::Information,
+			"You Win",
+			"You Win",
+			QMessageBox::Retry | QMessageBox::Close, // «ö¶s
+			this);
+		QAbstractButton* retryButton = messageBox->button(QMessageBox::Retry);
+		QAbstractButton* closeButton = messageBox->button(QMessageBox::Close);
+		retryButton->setText("Replay");
+		closeButton->setText("Quit");
+		int ret = messageBox->exec();
+		if (ret == QMessageBox::Retry) {
+			this->close();			
+		}
+		else if (ret == QMessageBox::Close) {
+			this->close();
+			lastWindow->close();
+		}
 	}
 	if (returnSignal == -1)
-	{
-		QMessageBox::information(this, "You Lose", "You Lose");
+	{		
 		status = 0;
+		QMessageBox* messageBox = new QMessageBox(
+			QMessageBox::Information,
+			"You Lose",
+			"You Lose",
+			QMessageBox::Retry | QMessageBox::Close, // «ö¶s
+			this);
+		QAbstractButton* retryButton = messageBox->button(QMessageBox::Retry);
+		QAbstractButton* closeButton = messageBox->button(QMessageBox::Close);
+		retryButton->setText("Replay");
+		closeButton->setText("Quit");
+		int ret = messageBox->exec();
+		if (ret == QMessageBox::Retry) {
+			this->close();
+		}
+		else if (ret == QMessageBox::Close) {
+			this->close();
+			lastWindow->close();
+		}
 	}
 }
 void GameWindow::onButtonRightClicked()
 {
+	QMediaPlayer* player = new QMediaPlayer(this);
+	audioOutput = new QAudioOutput(this);
+	player->setAudioOutput(audioOutput);
+	player->setSource(QUrl::fromLocalFile("click.wav"));
+	player->play();
+
 	MineSweeperElement* button = qobject_cast<MineSweeperElement*>(sender());
 	if (!status)
 	{
@@ -169,6 +258,11 @@ int GameWindow::buttonSweep(MineSweeperElement* button)
 		if (button->getValue() == -1)
 		{
 			button->boom();
+			QMediaPlayer* player = new QMediaPlayer(this);
+			audioOutput = new QAudioOutput(this);
+			player->setAudioOutput(audioOutput);
+			player->setSource(QUrl::fromLocalFile("boom.wav"));
+			player->play();
 			for (int i = 0; i < mapMines; i++)
 				mineList[i]->disply();
 			return -1;
