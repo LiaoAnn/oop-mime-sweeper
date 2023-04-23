@@ -12,7 +12,7 @@ to run at GUI mode
 
 ![2023-04-23](2023-04-23.png)
 
-![2023-04-23 (1)](2023-04-23 (1).png)
+![2023-04-23-1](2023-04-23-1.png)
 
 ```
 Language: C++
@@ -21,12 +21,12 @@ main contributor: 劉耀恩
 ### Installation Guide
 ```
   QT version 6.5 
-	Visual studio 2022
+  Visual studio 2022
 ```
 ### Operation Guide 
 ```
   1.Set the file location.
-	2.clone in the main branch. (gh repo clone LiaoAnn/oop-mime-sweeper)
+  2.clone in the main branch. (gh repo clone LiaoAnn/oop-mime-sweeper)
   3.If gh is not support, you need to install the github CLI.
   4.run the commend "git checkout -f New-framework".(branch name: New-framework) 
   5.run the commend "ls -al" to see the branch content.
