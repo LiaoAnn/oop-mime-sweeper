@@ -13,5 +13,11 @@ void PrintAnswer();
 bool LeftClick(int row, int col);
 bool RightClick(int row, int col);
 bool ResetMap();
+void PrintGameState();
+void PrintGameState();
+void PrintBombCount();
+void PrintFlagCount();
+void PrintOpenBlankCount();
+void PrintRemainBlankCount();
 
 

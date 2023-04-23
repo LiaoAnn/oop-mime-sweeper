@@ -58,6 +58,17 @@ bool ExecuteCommand(QString command, QString outputFileName)
 			PrintMap();
 		else if (list[1] == "GameAnswer")
 			PrintAnswer();
+		else if (list[1] == "GameState")
+			PrintGameState();
+		else if (list[1] == "BombCount")
+			PrintBombCount();
+		else if (list[1] == "FlagCount")
+			PrintFlagCount();
+		else if (list[1] == "OpenBlankCount")
+			PrintOpenBlankCount();
+		else if (list[1] == "RemainBlankCount")
+			PrintRemainBlankCount();
+
 		isSuccess = true;
 	}
 	else if (commandName == LEFT_CLICK_COMMAND)

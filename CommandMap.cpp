@@ -307,3 +307,16 @@ bool ResetMap()
 	return true;
 }
 
+void PrintGameState() {}
+
+void PrintGameState() {}
+
+void PrintBombCount() {}
+
+void PrintFlagCount() {}
+
+void PrintOpenBlankCount() {}
+
+void PrintRemainBlankCount() {}
+
+
