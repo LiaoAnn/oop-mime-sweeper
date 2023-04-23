@@ -1,4 +1,5 @@
 #include "RunMode.h"
+#include "CommandMode.h"
 
 GameState GameGlobal::gameState = LOADING;
 
@@ -14,9 +15,11 @@ int RunGUI(int argc, char* argv[])
 // Console Command Mode
 int RunCommandFile(char* inputFileName, char* outputFileName)
 {
+	bool isSuccess = false;
+	QString printString = "";
+
 	// Read file
 	QStringList lines = LoadFile(inputFileName);
-	bool isSuccess = false;
 
 	QFile file(outputFileName);
 	file.open(QIODevice::WriteOnly);
@@ -24,12 +27,24 @@ int RunCommandFile(char* inputFileName, char* outputFileName)
 
 	for (int i = 0; i < lines.size(); i++)
 	{
-		// Execute command
-		isSuccess = ExecuteCommand(lines[i], outputFileName);
+		QStringList commandList = lines[i].split(" ");
 
-		QString result = isSuccess ? "Success" : "Fail";
-		QString output = QString("<%1> : %2\r\n").arg(lines[i]).arg(result);
-		out << output;
+		if (commandList[0] != PRINT_COMMAND)
+		{
+			// Execute command
+			isSuccess = ExecuteCommand(commandList);
+
+			QString result = isSuccess ? "Success" : "Fail";
+			QString output = QString("<%1> : %2\r\n").arg(lines[i]).arg(result);
+			out << output;
+		}
+		else
+		{
+			printString = ExecutePrintCommand(commandList);
+
+			QString output = QString("<%1>\r\n%2").arg(lines[i], printString);
+			out << output;
+		}
 	}
 
 	file.close();
@@ -44,7 +59,8 @@ int RunCommandInput()
 
 	while ((line = stream.readLine()) != QString("Quit"))
 	{
-		ExecuteCommand(line, "");
+		QStringList commandList = line.split(" ");
+		ExecuteCommand(commandList);
 	}
 
 	return 0;

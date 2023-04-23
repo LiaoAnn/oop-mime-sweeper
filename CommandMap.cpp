@@ -206,47 +206,6 @@ void GenerateMapRateMine(int row, int col, double mineRate)
 	GenerateMapCountMine(row, col, mineCount);
 }
 
-void PrintMap()
-{
-	int row = mapRow;
-	int col = mapCol;
-	for (int i = 0; i < row; i++)
-	{
-		for (int j = 0; j < col; j++)
-		{
-			BaseMineSweeperElement* curr = objectList[i][j];
-			if (curr->isFlagged())
-				std::cout << "f";
-			else if (curr->isConfused())
-				std::cout << "?";
-			else if (curr->isSwept())
-				std::cout << curr->getValue();
-			else
-				std::cout << "#";
-			std::cout << " ";
-		}
-		std::cout << std::endl;
-	}
-}
-
-void PrintAnswer()
-{
-	int row = mapRow;
-	int col = mapCol;
-	for (int i = 0; i < row; i++)
-	{
-		for (int j = 0; j < col; j++)
-		{
-			const int value = layout[i][j];
-			const char output = value == -1
-				? 'X'
-				: value + 48;
-			std::cout << output << " ";
-		}
-		std::cout << std::endl;
-	}
-}
-
 bool LeftClick(int row, int col)
 {
 	BaseMineSweeperElement* curr = objectList[row][col];
@@ -307,16 +266,100 @@ bool ResetMap()
 	return true;
 }
 
-void PrintGameState() {}
+QString PrintMap()
+{
+	int row = mapRow;
+	int col = mapCol;
+	QString resultString = "", temp = "";
 
-void PrintGameState() {}
+	for (int i = 0; i < row; i++)
+	{
+		/*for (int j = 0; j < col; j++)
+		{
+			BaseMineSweeperElement* curr = objectList[i][j];
+			if (curr->isFlagged())
+				std::cout << "f";
+			else if (curr->isConfused())
+				std::cout << "?";
+			else if (curr->isSwept())
+				std::cout << curr->getValue();
+			else
+				std::cout << "#";
+			std::cout << " ";
+		}*/
 
-void PrintBombCount() {}
+		for (int j = 0; j < col; j++)
+		{
+			BaseMineSweeperElement* curr = objectList[i][j];
+			if (curr->isFlagged())
+				temp = "f";
+			else if (curr->isConfused())
+				temp = "?";
+			else if (curr->isSwept())
+				temp = QString::number(curr->getValue());
+			else
+				temp = "#";
+			temp += " ";
 
-void PrintFlagCount() {}
+			resultString += temp;
+			std::cout << temp.toStdString();
+		}
 
-void PrintOpenBlankCount() {}
+		resultString += "\r\n";
+		std::cout << std::endl;
+	}
 
-void PrintRemainBlankCount() {}
+	return resultString;
+}
 
+QString PrintAnswer()
+{
+	int row = mapRow;
+	int col = mapCol;
+	QString resultString = "";
 
+	for (int i = 0; i < row; i++)
+	{
+		for (int j = 0; j < col; j++)
+		{
+			const int value = layout[i][j];
+			const char output = value == -1
+				? 'X'
+				: value + 48;
+
+			resultString += output;
+			resultString += " ";
+			std::cout << output << " ";
+		}
+
+		resultString += "\r\n";
+		std::cout << std::endl;
+	}
+
+	return resultString;
+}
+
+QString PrintGameState()
+{
+	return "";
+}
+
+QString PrintBombCount()
+{
+	return "";
+}
+
+QString PrintFlagCount()
+{
+	return "";
+}
+
+QString PrintOpenBlankCount()
+{
+	return "";
+}
+
+QString PrintRemainBlankCount()
+{
+	return "";
+}
