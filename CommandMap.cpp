@@ -218,11 +218,16 @@ bool LeftClick(int row, int col)
 	int returnSignal = curr->sweep();
 	openedBlanks += returnSignal;
 	if (returnSignal == -1)
+	{
 		std::cout << "You lose!" << std::endl;
+		GameGlobal::gameState = GameState::END;
+	}
 	if (openedBlanks == mapBlanks)
+	{
 		std::cout << "You win!" << std::endl;
+		GameGlobal::gameState = GameState::END;
+	}
 
-	GameGlobal::gameState = GameState::END;
 	return true;
 }
 
