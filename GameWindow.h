@@ -9,14 +9,12 @@ class GameWindow : public QMainWindow
 {
 	Q_OBJECT
 public:
-	GameWindow(QWidget*, StartWindow*, int, int, int);
 	GameWindow(QWidget*, StartWindow*, int**, int, int, int);
 	~GameWindow();
 	void drawOut();
 	void closeEvent(QCloseEvent*);
 	void onButtonLeftClicked();
 	void onButtonRightClicked();
-	void showNextButton();
 	int buttonSweep(MineSweeperElement*);
 	int buttonDiffusion(MineSweeperElement*);
 	int buttonSign(MineSweeperElement*);
@@ -31,9 +29,6 @@ public:
 private:
 	QTimer* timer = nullptr;
 	QMenu* printMenu = nullptr;
-	QMediaPlayer* bgm = nullptr;
-	QMediaPlayer* click = nullptr;
-	QMediaPlayer* boom = nullptr;
 	QAudioOutput* bgmOutput = nullptr;
 	QAudioOutput* clickOutput = nullptr;
 	QAudioOutput* boomOutput = nullptr;
@@ -46,7 +41,7 @@ private:
 	int mapBlanks = 0;
 	int openedBlanks = 0;
 	int flags = 0;
-	bool status = true;
+	bool status = true; // true: playing, false: game over
 	StartWindow* lastWindow;
 	Ui::QtWidgetsApplicationClass ui;
 };

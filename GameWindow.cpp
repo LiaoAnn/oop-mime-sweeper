@@ -8,52 +8,21 @@
 #include "generateMinesweeperBoard.h"
 #include "StartWindow.h"
 #include "Positioin.h"
-#include <QFile>
-#include <QTextStream>
 
-GameWindow::GameWindow(QWidget* parent, StartWindow* from, int width, int height, int mines) : QMainWindow(parent)
-{
-	ui.setupUi(this);
-	// Set up the window
-	this->lastWindow = from;
-	this->mapWidth = width;
-	this->mapHeight = height;
-	this->mapMines = mines;
-	this->setFixedSize(width * 30 + 20, height * 30 + 40);
-	printMenu = this->menuBar()->addMenu("Print");
-	printMenu->addAction("GameBoard", this, &GameWindow::printGameBoard);
-	printMenu->addAction("GameState", this, &GameWindow::printGameState);
-	printMenu->addAction("GameAnswer", this, &GameWindow::printGameAnswer);
-	printMenu->addAction("BombCount", this, &GameWindow::printBombCount);
-	printMenu->addAction("FlagCount", this, &GameWindow::printFlagCount);
-	printMenu->addAction("OpenBlankCount", this, &GameWindow::printOpenBlankCount);
-	printMenu->addAction("RemainBlankCount", this, &GameWindow::printRemainBlankCount);
-	// Remove all toolbars
-	QList<QToolBar*> allToolBars = this->findChildren<QToolBar*>();
-	foreach(QToolBar * tb, allToolBars)
-		this->removeToolBar(tb);
-
-	layout = generateMinesweeperBoard(mapWidth, mapHeight, mines); // Generate the board
-	mapBlanks = mapWidth * mapHeight - mapMines;
-	mineList = new MineSweeperElement * [mapMines];
-	timer = new QTimer(this);
-	connect(timer, &QTimer::timeout, this, &GameWindow::showNextButton);
-	if (width * height <= 100)
-		timer->start(2);
-	else if (width * height <= 500)
-		timer->start(1);
-	else
-		timer->start(0);
-}
 GameWindow::GameWindow(QWidget* parent, StartWindow* from, int** board, int width, int height, int mines) : QMainWindow(parent)
 {
+
 	ui.setupUi(this);
-	// Set up the window
+	// Set up the Window and variables
 	this->lastWindow = from;
 	this->mapWidth = width;
 	this->mapHeight = height;
 	this->mapMines = mines;
 	this->setFixedSize(width * 30 + 20, height * 30 + 40);
+	this->layout = board;
+	this->mapBlanks = mapWidth * mapHeight - mapMines;
+	this->mineList = new MineSweeperElement * [mapMines];
+	// Add menu Actions
 	printMenu = this->menuBar()->addMenu("Print");
 	printMenu->addAction("GameBoard", this, &GameWindow::printGameBoard);
 	printMenu->addAction("GameState", this, &GameWindow::printGameState);
@@ -66,37 +35,28 @@ GameWindow::GameWindow(QWidget* parent, StartWindow* from, int** board, int widt
 	QList<QToolBar*> allToolBars = this->findChildren<QToolBar*>();
 	foreach(QToolBar * tb, allToolBars)
 		this->removeToolBar(tb);
-	layout = board;
-	this->setWindowTitle(QString::number(mapWidth) + " " + QString::number(mapHeight) + " " + QString::number(mapMines) + " ");
-	mapBlanks = mapWidth * mapHeight - mapMines;
-	mineList = new MineSweeperElement * [mapMines];
-	timer = new QTimer(this);
-	connect(timer, &QTimer::timeout, this, &GameWindow::showNextButton);
-	if (width * height <= 100)
-		timer->start(2);
-	else if (width * height <= 500)
-		timer->start(1);
-	else
-		timer->start(0);
+	// Set up  Background Music
 	bgmOutput = new QAudioOutput(this);
-	bgmOutput->setVolume(0.1);
+	bgmOutput->setVolume(0.05);
+	lastWindow->bgm->setAudioOutput(bgmOutput);
+	lastWindow->bgm->play();
+	// Set up Sound Effect
 	clickOutput = new QAudioOutput(this);
 	clickOutput->setVolume(0.1);
 	boomOutput = new QAudioOutput(this);
 	boomOutput->setVolume(0.1);
-	bgm = new QMediaPlayer(this);
-	bgm->setAudioOutput(bgmOutput);
-	bgm->setSource(QUrl::fromLocalFile("bgm.mp3"));	
-	bgm->play();
-	click = new QMediaPlayer(this);
-	click->setAudioOutput(clickOutput);
-	click->setSource(QUrl::fromLocalFile("click.wav"));
-	boom = new QMediaPlayer(this);
-	boom->setAudioOutput(boomOutput);
-	boom->setSource(QUrl::fromLocalFile("boom.wav"));
+	lastWindow->click->setAudioOutput(clickOutput);
+	lastWindow->boom->setAudioOutput(boomOutput);
 }
+
 GameWindow::~GameWindow()
 {
+	// Stop the BGM
+	lastWindow->bgm->stop();
+	// Delete all the objects
+	for (int i = 0; i < mapHeight; i++)
+		delete objectList[i];
+	delete objectList;
 	for (int i = 0; i < mapHeight; i++)
 		delete layout[i];
 	delete layout;
@@ -109,15 +69,15 @@ void GameWindow::closeEvent(QCloseEvent* event)
 		std::cout << "<Quit> : Failed" << std::endl;
 		return;
 	}
-	for (int i = 0; i < mapHeight; i++)
-		delete objectList[i];
-	delete objectList;
+	std::cout << "<Quit> : Success" << std::endl;
 	this->~GameWindow();
+	// Show the Start window
 	lastWindow->show();
 }
 void  GameWindow::drawOut()
 {
 	int mineCount = 0;
+	// Set up the GameBoard
 	objectList = new MineSweeperElement * *[mapHeight];
 	for (int i = 0; i < mapHeight; i++)
 	{
@@ -134,42 +94,18 @@ void  GameWindow::drawOut()
 			{
 				mineList[mineCount] = objectList[i][j];
 				mineCount++;
-			}				
+			}
 			connect(objectList[i][j], &QPushButton::clicked, this, &GameWindow::onButtonLeftClicked);
 			objectList[i][j]->setContextMenuPolicy(Qt::CustomContextMenu); // to link menu event to button
 			connect(objectList[i][j], &QPushButton::customContextMenuRequested, this, &GameWindow::onButtonRightClicked);
 		}
 	}
-	// make all element invisable for testing objectList is working
-	for (int i = 0; i < mapHeight; i++)
-	{
-		for (int j = 0; j < mapWidth; j++)
-		{
-			objectList[i][j]->hide();
-		}
-	}
 }
-void GameWindow::showNextButton()
-{
-	static int i = 0, j = 0;
-	if (i < mapHeight && j < mapWidth) {
-		objectList[i][j]->show();
-		j++;
-		if (j == mapWidth) {
-			j = 0;
-			i++;
-		}
-	}
-	else {
-		timer->stop();
-		i = 0;
-		j = 0;
-	}
-}
+
 void GameWindow::onButtonLeftClicked()
 {
 	QMediaPlayer* player = new QMediaPlayer(this);
-	click->play();
+	lastWindow->click->play();
 	MineSweeperElement* button = qobject_cast<MineSweeperElement*>(sender());
 	if (!status)
 	{
@@ -188,6 +124,11 @@ void GameWindow::onButtonLeftClicked()
 	if (openedBlanks == mapBlanks)
 	{
 		status = 0;
+		for (int i = 0; i < mapMines; i++)
+		{
+			mineList[i]->flag();
+		}
+		std::cout << "You win" << std::endl;
 		QMessageBox* messageBox = new QMessageBox(
 			QMessageBox::Information,
 			"You Win",
@@ -200,16 +141,25 @@ void GameWindow::onButtonLeftClicked()
 		closeButton->setText("Quit");
 		int ret = messageBox->exec();
 		if (ret == QMessageBox::Retry) {
-			this->close();			
+			std::cout << "<Replay> : Success" << std::endl;
+			this->close();
 		}
 		else if (ret == QMessageBox::Close) {
+			std::cout << "<Quit> : Success" << std::endl;
 			this->close();
 			lastWindow->close();
 		}
 	}
 	if (returnSignal == -1)
-	{		
+	{
 		status = 0;
+		lastWindow->boom->play();
+		for (int i = 0; i < mapMines; i++)
+		{
+			mineList[i]->setChecked(true);
+			mineList[i]->disply();
+		}
+		std::cout << "You lose the game" << std::endl;
 		QMessageBox* messageBox = new QMessageBox(
 			QMessageBox::Information,
 			"You Lose",
@@ -222,9 +172,11 @@ void GameWindow::onButtonLeftClicked()
 		closeButton->setText("Quit");
 		int ret = messageBox->exec();
 		if (ret == QMessageBox::Retry) {
+			std::cout << "<Replay> : Success" << std::endl;
 			this->close();
 		}
 		else if (ret == QMessageBox::Close) {
+			std::cout << "<Quit> : Success" << std::endl;
 			this->close();
 			lastWindow->close();
 		}
@@ -233,7 +185,7 @@ void GameWindow::onButtonLeftClicked()
 void GameWindow::onButtonRightClicked()
 {
 	QMediaPlayer* player = new QMediaPlayer(this);
-	click->play();
+	lastWindow->click->play();
 
 	MineSweeperElement* button = qobject_cast<MineSweeperElement*>(sender());
 	if (!status)
@@ -261,9 +213,6 @@ int GameWindow::buttonSweep(MineSweeperElement* button)
 		if (button->getValue() == -1)
 		{
 			button->boom();
-			boom->play();
-			for (int i = 0; i < mapMines; i++)
-				mineList[i]->disply();
 			return -1;
 		}
 		else
@@ -275,7 +224,8 @@ int GameWindow::buttonSweep(MineSweeperElement* button)
 			button->setClicked(true);
 			button->disply();
 			sweptCount++;
-			sweptCount += buttonDiffusion(button);
+			if (button->getValue() == 0)
+				sweptCount += buttonDiffusion(button);
 		}
 	}
 	return sweptCount;
@@ -284,29 +234,27 @@ int GameWindow::buttonDiffusion(MineSweeperElement* button)
 {
 	int sweptCount = 0;
 	Position position = button->getPosition();
-	if (button->getValue() == 0)
+
+	if (button->getPosition().x != 0)
 	{
-		if (button->getPosition().x != 0)
-		{
-			sweptCount += buttonSweep(objectList[position.y][position.x - 1]);
-			if (position.y != 0)
-				sweptCount += buttonSweep(objectList[position.y - 1][position.x - 1]);
-			if (position.y % mapHeight != mapHeight - 1)
-				sweptCount += buttonSweep(objectList[position.y + 1][position.x - 1]);
-		}
-		if (position.x % mapWidth != mapWidth - 1)
-		{
-			sweptCount += buttonSweep(objectList[position.y][position.x + 1]);
-			if (position.y != 0)
-				sweptCount += buttonSweep(objectList[position.y - 1][position.x + 1]);
-			if (position.y % mapHeight != mapHeight - 1)
-				sweptCount += buttonSweep(objectList[position.y + 1][position.x + 1]);
-		}
+		sweptCount += buttonSweep(objectList[position.y][position.x - 1]);
 		if (position.y != 0)
-			sweptCount += buttonSweep(objectList[position.y - 1][position.x]);
+			sweptCount += buttonSweep(objectList[position.y - 1][position.x - 1]);
 		if (position.y % mapHeight != mapHeight - 1)
-			sweptCount += buttonSweep(objectList[position.y + 1][position.x]);
+			sweptCount += buttonSweep(objectList[position.y + 1][position.x - 1]);
 	}
+	if (position.x % mapWidth != mapWidth - 1)
+	{
+		sweptCount += buttonSweep(objectList[position.y][position.x + 1]);
+		if (position.y != 0)
+			sweptCount += buttonSweep(objectList[position.y - 1][position.x + 1]);
+		if (position.y % mapHeight != mapHeight - 1)
+			sweptCount += buttonSweep(objectList[position.y + 1][position.x + 1]);
+	}
+	if (position.y != 0)
+		sweptCount += buttonSweep(objectList[position.y - 1][position.x]);
+	if (position.y % mapHeight != mapHeight - 1)
+		sweptCount += buttonSweep(objectList[position.y + 1][position.x]);
 	return sweptCount;
 }
 int GameWindow::buttonSign(MineSweeperElement* button)

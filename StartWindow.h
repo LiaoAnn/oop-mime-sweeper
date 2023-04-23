@@ -8,6 +8,7 @@
 #include <qgroupbox.h>
 #include <QLineEdit>
 #include <qradiobutton.h>
+#include <QtMultimedia/QMediaPlayer>
 #include "ui_StartWindow.h"
 class StartWindow : public QMainWindow
 {
@@ -34,6 +35,9 @@ public:
 	QRadioButton* radioBtn2;
 	QGroupBox* groupBox;
 	QGroupBox* groupBox2;
+	QMediaPlayer* bgm = nullptr;
+	QMediaPlayer* click = nullptr;
+	QMediaPlayer* boom = nullptr;
 	Ui::QtWidgetsApplicationClass ui;
 private:
 	int width = 10;
