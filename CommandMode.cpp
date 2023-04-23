@@ -54,7 +54,10 @@ bool ExecuteCommand(QString command, QString outputFileName)
 	else if (commandName == PRINT_COMMAND)
 	{
 		// Not implement
-		PrintMap();
+		if (list[1] == "GameBoard")
+			PrintMap();
+		else if (list[1] == "GameAnswer")
+			PrintAnswer();
 		isSuccess = true;
 	}
 	else if (commandName == LEFT_CLICK_COMMAND)
@@ -62,8 +65,7 @@ bool ExecuteCommand(QString command, QString outputFileName)
 		if (GameGlobal::gameState == PLAYING)
 		{
 			// Not implement
-			LeftClick(list[1].toInt(), list[2].toInt());
-			isSuccess = true;
+			isSuccess = LeftClick(list[1].toInt(), list[2].toInt());
 		}
 		else
 		{
@@ -89,7 +91,7 @@ bool ExecuteCommand(QString command, QString outputFileName)
 		{
 			GameGlobal::gameState = LOADING;
 			// Not implement
-			ResetMap();
+			isSuccess = ResetMap();
 		}
 		else
 		{

@@ -9,8 +9,9 @@ void LoadBoardFile(QString fileName);
 void GenerateMapCountMine(int row, int col, int mineCount);
 void GenerateMapRateMine(int row, int col, double mineRate);
 void PrintMap();
-void LeftClick(int row, int col);
-void RightClick(int row, int col);
-void ResetMap();
+void PrintAnswer();
+bool LeftClick(int row, int col);
+bool RightClick(int row, int col);
+bool ResetMap();
 
 
