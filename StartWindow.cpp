@@ -103,6 +103,7 @@ StartWindow::StartWindow(QWidget* parent) : QMainWindow(parent)
 	// Set default values
 	bgm = new QMediaPlayer(this);
 	bgm->setSource(QUrl::fromLocalFile("bgm.wav"));
+	bgm->setLoops(-1);
 	click = new QMediaPlayer(this);
 	click->setSource(QUrl::fromLocalFile("click.wav"));
 	boom = new QMediaPlayer(this);
