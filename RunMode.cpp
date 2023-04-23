@@ -51,7 +51,7 @@ int RunCommandFile(char* inputFileName, char* outputFileName)
 		{
 			printString = ExecutePrintCommand(commandList);
 
-			output = QString("<%1>\r\n%2").arg(lines[i], printString);
+			output = QString("<%1>%2\r\n").arg(lines[i], printString);
 			out << output;
 		}
 		else {
@@ -84,7 +84,7 @@ int RunCommandInput()
 		{
 			printString = ExecutePrintCommand(commandList);
 
-			output = QString("<%1>\r\n%2").arg(line, printString);
+			output = QString("<%1>%2\r\n").arg(line, printString);
 			std::cout << output.toStdString();
 		}
 		else

@@ -245,6 +245,11 @@ bool RightClick(int row, int col)
 	return true;
 }
 
+/**
+ * Intent: Reset the map
+ * Pre:
+ * Post:
+ */
 bool ResetMap()
 {
 	// Delete objectList
@@ -274,6 +279,11 @@ bool ResetMap()
 	return true;
 }
 
+/**
+ * Intent: Print the map
+ * Pre:
+ * Post:
+ */
 QString PrintMap()
 {
 	int row = mapRow;
@@ -313,13 +323,21 @@ QString PrintMap()
 			std::cout << temp.toStdString();
 		}
 
-		resultString += "\r\n";
+		// If not last row, add new line
+		if (i < row - 1)
+			resultString += "\r\n";
 		std::cout << std::endl;
 	}
 
+	resultString = "\r\n" + resultString;
 	return resultString;
 }
 
+/**
+ * Intent: Print the answer
+ * Pre:
+ * Post:
+ */
 QString PrintAnswer()
 {
 	int row = mapRow;
@@ -340,13 +358,21 @@ QString PrintAnswer()
 			std::cout << output << " ";
 		}
 
-		resultString += "\r\n";
+		// If not last row, add new line
+		if (i < row - 1)
+			resultString += "\r\n";
 		std::cout << std::endl;
 	}
 
+	resultString = "\r\n" + resultString;
 	return resultString;
 }
 
+/**
+ * Intent: Print the game state
+ * Pre:
+ * Post:
+ */
 QString PrintGameState()
 {
 	if (GameGlobal::gameState == GameState::LOADING)
@@ -359,21 +385,41 @@ QString PrintGameState()
 	return "";
 }
 
+/**
+ * Intent: Print the bomb count
+ * Pre:
+ * Post:
+ */
 QString PrintBombCount()
 {
 	return "";
 }
 
+/**
+ * Intent: Print the flag count
+ * Pre:
+ * Post:
+ */
 QString PrintFlagCount()
 {
 	return "";
 }
 
+/**
+ * Intent: Print the confused count
+ * Pre:
+ * Post:
+ */
 QString PrintOpenBlankCount()
 {
 	return "";
 }
 
+/**
+ * Intent: Print the remain blank count
+ * Pre:
+ * Post:
+ */
 QString PrintRemainBlankCount()
 {
 	return "";
