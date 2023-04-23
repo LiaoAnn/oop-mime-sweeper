@@ -87,21 +87,6 @@ bool ExecuteCommand(QStringList commandList)
 			isSuccess = false;
 		}
 	}
-	else if (commandName == QUIT_COMMAND)
-	{
-		if (GameGlobal::gameState == END)
-		{
-			exit(1);
-		}
-		else
-		{
-			isSuccess = false;
-		}
-	}
-	else
-	{
-		// Error
-	}
 
 	return isSuccess;
 }

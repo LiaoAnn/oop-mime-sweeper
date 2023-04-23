@@ -1,6 +1,7 @@
 #include "CommandMap.h"
 #include "BaseMineSweeperElement.h"
 #include <iostream>
+#include "RunMode.h"
 
 const char MINE = 'X';
 const char EMPTY = 'O';
@@ -220,6 +221,8 @@ bool LeftClick(int row, int col)
 		std::cout << "You lose!" << std::endl;
 	if (openedBlanks == mapBlanks)
 		std::cout << "You win!" << std::endl;
+
+	GameGlobal::gameState = GameState::END;
 	return true;
 }
 
@@ -341,6 +344,13 @@ QString PrintAnswer()
 
 QString PrintGameState()
 {
+	if (GameGlobal::gameState == GameState::LOADING)
+		return "Loading";
+	else if (GameGlobal::gameState == GameState::END)
+		return "End";
+	else if (GameGlobal::gameState == GameState::PLAYING)
+		return "Playing";
+
 	return "";
 }
 
