@@ -44,6 +44,10 @@ int BaseMineSweeperElement::sweep()
 		}
 		else
 		{
+			if (this->isFlagged())
+				this->unflag();
+			if (this->isConfused())
+				this->unconfuse();
 			this->swept = true;
 			//this->disply();
 			sweptCount++;
