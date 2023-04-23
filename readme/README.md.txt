@@ -55,6 +55,11 @@ RunMode.cpp
 StartWindow.cpp
 ```
 
+### copyright
+```
+Copyright (c) 2023 National Taiwan University of Science and Technology . All rights reserved.
+```
+
 ### Licesne
 ```
 SPDX-License-Identifier: Apache-2.0
