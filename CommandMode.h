@@ -20,6 +20,7 @@ const QString REPLAY_COMMAND = "Replay";
 const QString QUIT_COMMAND = "Quit";
 
 QStringList LoadFile(QString fileName);
-bool ExecuteCommand(QString command, QString outputFileName);
+bool ExecuteCommand(QStringList commandList);
 void LoadCommand(QStringList originCommand);
+QString ExecutePrintCommand(QStringList commandList);
 

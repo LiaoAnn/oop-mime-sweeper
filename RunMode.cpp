@@ -1,4 +1,5 @@
 #include "RunMode.h"
+#include "CommandMode.h"
 
 GameState GameGlobal::gameState = LOADING;
 
@@ -14,9 +15,11 @@ int RunGUI(int argc, char* argv[])
 // Console Command Mode
 int RunCommandFile(char* inputFileName, char* outputFileName)
 {
+	bool isSuccess = false;
+	QString printString = "", result = "", output = "";
+
 	// Read file
 	QStringList lines = LoadFile(inputFileName);
-	bool isSuccess = false;
 
 	QFile file(outputFileName);
 	file.open(QIODevice::WriteOnly);
@@ -24,12 +27,41 @@ int RunCommandFile(char* inputFileName, char* outputFileName)
 
 	for (int i = 0; i < lines.size(); i++)
 	{
-		// Execute command
-		isSuccess = ExecuteCommand(lines[i], outputFileName);
+		QStringList commandList = lines[i].split(" ");
 
-		QString result = isSuccess ? "Success" : "Fail";
-		QString output = QString("<%1> : %2\r\n").arg(lines[i]).arg(result);
-		out << output;
+		if (commandList.size() == 0)
+			continue;
+
+		if (commandList[0] == QUIT_COMMAND)
+		{
+			// Execute command
+			isSuccess = (GameGlobal::gameState == GameState::END) ? true : false;
+			result = isSuccess ? "Success" : "Fail";
+
+			output = QString("<%1> : %2\r\n").arg(lines[i]).arg(result);
+			out << output;
+
+			if (isSuccess)
+			{
+				out.flush();
+				exit(1);
+			}
+		}
+		else if (commandList[0] == PRINT_COMMAND)
+		{
+			printString = ExecutePrintCommand(commandList);
+
+			output = QString("<%1>%2\r\n").arg(lines[i], printString);
+			out << output;
+		}
+		else {
+			// Execute command
+			isSuccess = ExecuteCommand(commandList);
+
+			result = isSuccess ? "Success" : "Fail";
+			output = QString("<%1> : %2\r\n").arg(lines[i]).arg(result);
+			out << output;
+		}
 	}
 
 	file.close();
@@ -40,11 +72,30 @@ int RunCommandFile(char* inputFileName, char* outputFileName)
 int RunCommandInput()
 {
 	QTextStream stream(stdin);
-	QString line = "";
+	QString line = "", printString = "", result = "", output = "";
+	bool isSuccess = false;
 
 	while ((line = stream.readLine()) != QString("Quit"))
 	{
-		ExecuteCommand(line, "");
+		QStringList commandList = line.split(" ");
+		ExecuteCommand(commandList);
+
+		if (commandList[0] == PRINT_COMMAND)
+		{
+			printString = ExecutePrintCommand(commandList);
+
+			output = QString("<%1>%2\r\n").arg(line, printString);
+			std::cout << output.toStdString();
+		}
+		else
+		{
+			// Execute command
+			isSuccess = ExecuteCommand(commandList);
+
+			result = isSuccess ? "Success" : "Fail";
+			output = QString("<%1> : %2\r\n").arg(line).arg(result);
+			std::cout << output.toStdString();
+		}
 	}
 
 	return 0;

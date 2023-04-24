@@ -3,7 +3,6 @@
 #include "RunMode.h"
 
 
-
 QStringList LoadFile(QString fileName)
 {
 	QFile file(fileName);
@@ -19,18 +18,17 @@ QStringList LoadFile(QString fileName)
 	return lines;
 }
 
-bool ExecuteCommand(QString command, QString outputFileName)
+bool ExecuteCommand(QStringList commandList)
 {
 	// Split command to list
-	QStringList list = command.split(" ");
-	QString commandName = list[0];
+	QString commandName = commandList[0];
 	bool isSuccess = false;
 
 	if (commandName == LOAD_COMMAND)
 	{
 		if (GameGlobal::gameState == LOADING)
 		{
-			LoadCommand(list);
+			LoadCommand(commandList);
 			isSuccess = true;
 		}
 		else
@@ -51,19 +49,12 @@ bool ExecuteCommand(QString command, QString outputFileName)
 		}
 
 	}
-	else if (commandName == PRINT_COMMAND)
-	{
-		// Not implement
-		PrintMap();
-		isSuccess = true;
-	}
 	else if (commandName == LEFT_CLICK_COMMAND)
 	{
 		if (GameGlobal::gameState == PLAYING)
 		{
 			// Not implement
-			LeftClick(list[1].toInt(), list[2].toInt());
-			isSuccess = true;
+			isSuccess = LeftClick(commandList[1].toInt(), commandList[2].toInt());
 		}
 		else
 		{
@@ -75,7 +66,7 @@ bool ExecuteCommand(QString command, QString outputFileName)
 		if (GameGlobal::gameState == PLAYING)
 		{
 			// Not implement
-			RightClick(list[1].toInt(), list[2].toInt());
+			RightClick(commandList[1].toInt(), commandList[2].toInt());
 			isSuccess = true;
 		}
 		else
@@ -89,30 +80,40 @@ bool ExecuteCommand(QString command, QString outputFileName)
 		{
 			GameGlobal::gameState = LOADING;
 			// Not implement
-			ResetMap();
+			isSuccess = ResetMap();
 		}
 		else
 		{
 			isSuccess = false;
 		}
-	}
-	else if (commandName == QUIT_COMMAND)
-	{
-		if (GameGlobal::gameState == END)
-		{
-			exit(1);
-		}
-		else
-		{
-			isSuccess = false;
-		}
-	}
-	else
-	{
-		// Error
 	}
 
 	return isSuccess;
+}
+
+QString ExecutePrintCommand(QStringList commandList)
+{
+	// Split command to list	
+	QString commandName = commandList[0];
+	QString printResult = "";
+
+	// Not implement
+	if (commandList[1] == "GameBoard")
+		printResult = PrintMap();
+	else if (commandList[1] == "GameAnswer")
+		printResult = PrintAnswer();
+	else if (commandList[1] == "GameState")
+		printResult = PrintGameState();
+	else if (commandList[1] == "BombCount")
+		printResult = PrintBombCount();
+	else if (commandList[1] == "FlagCount")
+		printResult = PrintFlagCount();
+	else if (commandList[1] == "OpenBlankCount")
+		printResult = PrintOpenBlankCount();
+	else if (commandList[1] == "RemainBlankCount")
+		printResult = PrintRemainBlankCount();
+
+	return printResult;
 }
 
 void LoadCommand(QStringList originCommand)
