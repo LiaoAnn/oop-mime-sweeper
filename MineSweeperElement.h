@@ -6,42 +6,43 @@
 #include "./Positioin.h"
 #include <string>
 #include <vector>
+#include "BaseMineSweeperElement.h"
 
-class MineSweeperElement : public QPushButton
+class MineSweeperElement : public QPushButton, protected BaseMineSweeperElement
 {
 	Q_OBJECT
 
 private:
-	MineSweeperInput* input;
-	bool swept = false;
-	bool flagged = false;
-	int serialNumber = 0;
-	int value = 0;
 	QString textColor = "Black";
 	QString backGroundColor = "White";
-	Position position;
 public:
-	static std::vector<MineSweeperElement*> m_objects; // Store all objects
+	static std::vector<MineSweeperElement*> m_objects;
+	// Constructor & Destructor
 	MineSweeperElement(MineSweeperInput* input);
 	~MineSweeperElement();
-
+	// Events
 	void onButtonLeftClicked();
-	void onButtonRightClicked();
-	void diffusion();
+	int onButtonRightClicked();
+	int diffusion();
+	int  sweep();
 	void flag();
-	void sweep();
 	void unflag();
+	void confuse();
+	void unconfuse();
 	void disply();
-
+	void boom();
+	void win();
+	// Getters 
 	Position getPosition();
-	bool getMine();
 	bool isSwept();
 	bool isFlagged();
+	bool isConfused();
 	int getSerialNumber();
 	int getValue();
-
+	// Setters
 	void setClicked(bool isClicked);
 	void setFlagged(bool isFlagged);
+	void setConfused(bool isConfused);
 	void setText(QString text);
 	void setIcon(QString icon);
 	void setBackGroundColor(QString);

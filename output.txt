@@ -1,0 +1,38 @@
+<Load BoardFile ./boards/board1.txt> : Success
+<StartGame> : Success
+<LeftClick 0 7> : Success
+<Print GameBoard> : Success
+<Print GameAnswer> : Success
+<LeftClick 4 8> : Success
+<LeftClick 8 0> : Success
+<Print GameBoard> : Success
+<LeftClick 4 0> : Success
+<RightClick 5 0> : Success
+<RightClick 4 1> : Success
+<LeftClick 5 1> : Success
+<LeftClick 5 2> : Success
+<LeftClick 4 2> : Success
+<Print GameBoard> : Success
+<LeftClick 4 6> : Success
+<LeftClick 4 5> : Success
+<LeftClick 4 4> : Success
+<Print GameBoard> : Success
+<Print GameState> : Success
+<LeftClick 7 7> : Success
+<LeftClick 7 8> : Success
+<RightClick 2 4> : Success
+<RightClick 6 2> : Success
+<Print GameBoard> : Success
+<RightClick 7 5> : Success
+<LeftClick 8 5> : Success
+<LeftClick 5 7> : Success
+<LeftClick 6 7> : Success
+<RightClick 4 7> : Success
+<RightClick 5 6> : Success
+<RightClick 6 6> : Success
+<Print GameBoard> : Success
+<LeftClick 5 8> : Success
+<LeftClick 6 8> : Success
+<LeftClick 7 6> : Success
+<LeftClick 8 6> : Success
+<Quit> : Fail

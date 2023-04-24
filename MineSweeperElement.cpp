@@ -1,23 +1,26 @@
-#include "./MineSweeperElement.h"
+﻿#include "./MineSweeperElement.h"
 #include "./MineSweeperInput.h"
 #include "./Positioin.h"
+#include "GameWindow.h"
 #include <iostream>
 #include <vector>
+#include <Qmessagebox>
 // Constructor
 MineSweeperElement::MineSweeperElement(MineSweeperInput* input)
 {
-	this->input = input;
-	this->value = input->value; // Set value
-	this->position = *input->position; // Set position
+	// Initialize variable
+	this->value = input->value;
+	if (this->value == -1)
+		mineBlocks++;
+	else
+		safeBlocks++;
+	this->position = *input->position;
 	this->setParent(input->parent);
 	// Create button and adding it to the layout
-	this->setGeometry(10 + (input->position->x * 30), 20 + (input->position->y * 30), 30, 30);
+	this->setGeometry(10 + (input->position->x * 30), 30 + (input->position->y * 30), 30, 30);
+	delete input; // Delete input
 	this->show();
 	this->serialNumber = m_objects.size();
-	// Connect click event
-	QObject::connect(this, &QPushButton::clicked, this, &MineSweeperElement::onButtonLeftClicked);
-	this->setContextMenuPolicy(Qt::CustomContextMenu); // to link menu event to button
-	connect(this, &QPushButton::customContextMenuRequested, this, &MineSweeperElement::onButtonRightClicked); // used menu event as a right click event
 	// Add to object list
 	m_objects.push_back(this);
 }
@@ -25,56 +28,92 @@ MineSweeperElement::MineSweeperElement(MineSweeperInput* input)
 // Destructor
 MineSweeperElement::~MineSweeperElement()
 {
+	mineBlocks = 0;
+	safeBlocks = 0;
 }
 
 // Click
 void MineSweeperElement::onButtonLeftClicked()
 {
-	if (!this->swept && !this->flagged)
+	if (!this->swept && !this->flagged && !this->confused)
 		this->sweep();
 }
-void MineSweeperElement::onButtonRightClicked()
+int MineSweeperElement::onButtonRightClicked()
 {
-	if (!this->isSwept())
+	if (!swept)
 	{
-		if (!this->isFlagged())
-			flag();
-		else
+		if (flagged)
+		{			
 			unflag();
-		return;
+			confuse();
+			return 0;
+		}
+		else if (confused)
+		{
+			unconfuse();
+			return -1;
+		}
+		else
+		{
+			flag();
+			return 1;
+		}
 	}
 }
-void MineSweeperElement::sweep()
+int MineSweeperElement::sweep()
 {
-	if (this->swept == false)
+	int sweptCount = 0;
+	if (this->swept == false && this->confused == false && this->flagged == false)
 	{
-		this->swept = true;
-		this->disply();
-		this->diffusion();
+		if (this->value == -1)
+		{			
+			this->boom();
+			return -1;
+		}
+		else
+		{
+			this->swept = true;
+			this->disply();
+			sweptCount++;
+			sweptCount += this->diffusion();
+		}
 	}
+	return sweptCount;
 }
-void MineSweeperElement::diffusion()
+int MineSweeperElement::diffusion()
 {
-	int width = m_objects[m_objects.size()-1]->position.x+1;
+	int sweptCount = 0;
+	int width = m_objects[m_objects.size() - 1]->position.x + 1;
 	int height = m_objects[m_objects.size() - 1]->position.y + 1;
 	if (this->value == 0)
 	{
-
-		if (serialNumber % height != 0)
-			m_objects[serialNumber - 1]->sweep();
-		if (serialNumber % height != height - 1)
-			m_objects[serialNumber + 1]->sweep();
-		if (serialNumber >= height)
-			m_objects[serialNumber - height]->sweep();
-		if (serialNumber < height * (width - 1))
-			m_objects[serialNumber + height]->sweep();
+		if (position.x != 0)
+		{
+			sweptCount += m_objects[serialNumber - 1]->sweep();
+			if (position.y != 0)
+				sweptCount+=m_objects[serialNumber - width - 1]->sweep();
+			if (position.y % height != height - 1)
+				sweptCount += m_objects[serialNumber + width - 1]->sweep();
+		}
+		if (position.x % width != width - 1)
+		{
+			sweptCount += m_objects[serialNumber + 1]->sweep();
+			if (position.y != 0)
+				sweptCount += m_objects[serialNumber - width + 1]->sweep();
+			if (position.y % height != height - 1)
+				sweptCount += m_objects[serialNumber + width + 1]->sweep();
+		}
+		if (position.y != 0)
+			sweptCount += m_objects[serialNumber - width]->sweep();
+		if (position.y % height != height - 1)
+			sweptCount += m_objects[serialNumber + width]->sweep();
 	}
+	return sweptCount;
 }
 void MineSweeperElement::flag()
 {
-
-	this->setStyleSheet("border: 1px solid gray; border-radius: 5px; background-color: #FF0000;");
-	this->setText("F");
+	this->setStyleSheet("border: 1px solid gray; border-radius: 5px; background-color: #5555ff;");
+	this->setText("🚩");
 	this->setFlagged(true);
 }
 void MineSweeperElement::unflag()
@@ -83,10 +122,32 @@ void MineSweeperElement::unflag()
 	this->setText(" ");
 	this->setFlagged(false);
 }
+void MineSweeperElement::confuse()
+{
+	this->setStyleSheet("border: 1px solid gray; border-radius: 5px; background-color: #fff555;");
+	this->setText("?");
+	this->setConfused(true);
+}
+void MineSweeperElement::unconfuse()
+{
+	this->setStyleSheet("");
+	this->setText(" ");
+	this->setConfused(false);
+}
 
 void MineSweeperElement::disply()
 {
-	this->setText(QString::number(this->value));
+	if (this->value != 0 && this->value != -1)
+		this->setText(QString::number(this->value));
+	if (this->value == 0)
+	{
+		setBackGroundColor("#bbbbbb");
+	}
+	if (this->value == -1)
+	{
+		this->setIcon("boom.gif");
+		this->setText("");
+	}
 	if (this->value == 1)
 	{
 		setTextColor("#006aff");
@@ -120,16 +181,28 @@ void MineSweeperElement::setTextColor(QString color)
 	this->setStyleSheet("border: 1px solid gray; border-radius: 5px; background-color: " + backGroundColor + "; color: " + textColor);
 }
 
-// Get Position
+void MineSweeperElement::boom()
+{
+	for (int i = 0; i < m_objects.size(); i++)
+	{
+		if (m_objects[i]->value == -1)
+			m_objects[i]->disply();
+		m_objects[i]->setDisabled(true);
+	}
+}
+
+void MineSweeperElement::win()
+{
+	for (int i = 0; i < m_objects.size(); i++)
+	{
+		m_objects[i]->setDisabled(true);
+	}
+}
+
+// Get Position 
 Position MineSweeperElement::getPosition()
 {
 	return this->position;
-}
-
-// Get Mine
-bool MineSweeperElement::getMine()
-{
-	return this->input->isMine;
 }
 
 // Get Value
@@ -150,6 +223,12 @@ bool MineSweeperElement::isFlagged()
 	return this->flagged;
 }
 
+// Is Confused
+bool MineSweeperElement::isConfused()
+{
+	return this->confused;
+}
+
 // Get Serial Number
 int MineSweeperElement::getSerialNumber()
 {
@@ -166,6 +245,11 @@ void MineSweeperElement::setClicked(bool isClicked)
 void MineSweeperElement::setFlagged(bool isFlagged)
 {
 	this->flagged = isFlagged;
+}
+// Set Confused
+void MineSweeperElement::setConfused(bool isConfused)
+{
+	this->confused = isConfused;
 }
 
 // Set Text
