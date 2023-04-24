@@ -1,4 +1,5 @@
 #include "StartWindow.h"
+#include "ui_StartWindow.h"
 #include "qpushbutton.h"
 #include "GameWindow.h"
 #include <QApplication>
@@ -11,6 +12,10 @@
 #include <QFileDialog>
 #include <qmessagebox.h>
 #include <qradiobutton.h>
+#include "generateMinesweeperBoard.h"
+#include <fstream>
+#include <iostream>
+#include <QtMultimedia/QMediaPlayer>
 
 StartWindow::StartWindow(QWidget* parent) : QMainWindow(parent)
 {
@@ -20,8 +25,9 @@ StartWindow::StartWindow(QWidget* parent) : QMainWindow(parent)
 	QList<QToolBar*> allToolBars = this->findChildren<QToolBar*>();
 	foreach(QToolBar * tb, allToolBars)
 		this->removeToolBar(tb);
-	// Custom window
-	this->setFixedSize(800, 600);
+	// Custom window	
+	this->setFixedSize(800, 300);
+	this->setWindowTitle("Minesweeper");
 	groupBox = new QGroupBox(this);
 	groupBox->setGeometry(QRect(QPoint(20, 10), QSize(760, 80)));
 	QLabel* label_Column = new QLabel("Column", groupBox);
@@ -83,15 +89,26 @@ StartWindow::StartWindow(QWidget* parent) : QMainWindow(parent)
 	button2->setGeometry(QRect(QPoint(500, 20), QSize(100, 30)));
 	QPushButton* button = new QPushButton("Start", groupBox3);
 	button->setGeometry(QRect(QPoint(620, 20), QSize(100, 30)));
-
+	
+	// Connect signals and slots
 	connect(button, &QPushButton::clicked, this, &StartWindow::Startgame);
 	connect(widthBox, &QSpinBox::valueChanged, this, &StartWindow::setWidth);
 	connect(heightBox, &QSpinBox::valueChanged, this, &StartWindow::setHeight);
 	connect(minesBox, &QDoubleSpinBox::valueChanged, this, &StartWindow::setMines);
 	connect(mineUnitBox, &QComboBox::currentIndexChanged, this, &StartWindow::setMinesUnit);
 	connect(BrowseBtn, &QPushButton::clicked, this, &StartWindow::browseFile);
-	connect( radioBtn1, &QRadioButton::clicked, this, &StartWindow::sourceMode);
+	connect(radioBtn1, &QRadioButton::clicked, this, &StartWindow::sourceMode);
 	connect(radioBtn2, &QRadioButton::clicked, this, &StartWindow::sourceMode);
+	connect(button2, &QPushButton::clicked, this, &StartWindow::loadFile);
+	// Set default values
+	bgm = new QMediaPlayer(this);
+	bgm->setSource(QUrl::fromLocalFile("bgm.wav"));
+	bgm->setLoops(-1);
+	click = new QMediaPlayer(this);
+	click->setSource(QUrl::fromLocalFile("click.wav"));
+	boom = new QMediaPlayer(this);
+	boom->setSource(QUrl::fromLocalFile("boom.wav"));
+	system("cls");
 }
 StartWindow::~StartWindow()
 {
@@ -99,27 +116,33 @@ StartWindow::~StartWindow()
 }
 void StartWindow::Startgame()
 {
-	GameWindow* window = new GameWindow(this, this, width, height, mines);
+	if (!canStart)
+	{
+		QMessageBox::warning(this, tr("Warning"), tr("No Board Loaded"));
+		std::cout << "<Start> : Failed" << std::endl;
+		return;
+	}
+	std::cout << "<Start> : Success" << std::endl;
+	GameWindow* window = new GameWindow(this, this, layout, width, height, mines);
 	// lock the window size
 	window->setFixedSize(window->size());
 	window->move(this->geometry().topLeft().x(), this->geometry().topLeft().y());
-	time_t t = time(0);
-	QString Title = QString::fromStdString("build time : ") + ctime(&t);
-	window->setWindowTitle(Title);
 	window->show();
 	window->drawOut();
+	canStart = false;
+	layout = nullptr;
 	this->hide();
 }
 void StartWindow::setWidth()
 {
 	this->width = this->widthBox->value();
-	if (minesUnit)
+	if (!minesUnit)
 		minesBox->setRange(1, width * height);
 }
 void StartWindow::setHeight()
 {
 	this->height = this->heightBox->value();
-	if (minesUnit)
+	if (!minesUnit)
 		minesBox->setRange(1, width * height);
 }
 void StartWindow::setMines()
@@ -169,4 +192,50 @@ void StartWindow::sourceMode()
 		groupBox->setDisabled(true);
 		groupBox2->setDisabled(false);
 	}
+}
+void StartWindow::loadFile()
+{
+	if (radioBtn1->isChecked())
+	{
+		layout = generateMinesweeperBoard(width, height, mines);
+		if (!minesUnit)
+			std::cout << "<Load RandomCount " << height << " " << width << " " << mines << "> : Success" << std::endl;
+		else
+			std::cout << "<Load RandomRate " << height << " " << width << " " << minesBox->value() << "> : Success" << std::endl;
+		canStart = 1;
+	}
+	else
+	{
+		std::ifstream file(lineEdit->text().toStdString());
+		if (!file.is_open())
+		{
+			std::cout << "<Load BoardFile " << lineEdit->text().toStdString() << "> : Failed" << std::endl;
+			QMessageBox::warning(this, tr("Warning"), tr("File not found!"));
+			return;
+		}
+		file >> height >> width;
+		mineUnitBox->setCurrentIndex(0);
+		mines = 0;
+		char** c_layout = new char* [height];
+		for (int i = 0; i < height; i++)
+		{
+			c_layout[i] = new char[width];
+			for (int j = 0; j < width; j++)
+			{
+				file >> c_layout[i][j];
+				if (c_layout[i][j] == 'X')
+					mines++;
+			}
+		}
+		heightBox->setValue(height);
+		widthBox->setValue(width);
+		minesBox->setValue(mines);
+		layout = transformationMinesweeperBoard(c_layout, width, height);
+		for (int i = 0; i < height; i++)
+			delete[] c_layout[i];
+		delete[] c_layout;
+		std::cout << "<Load BoardFile " << lineEdit->text().toStdString() << "> : Success" << std::endl;
+		canStart = 1;
+	}
+	this->setWindowTitle("Loaded " + QString::number(height) + "*" + QString::number(width) + "[" + QString::number(mines) + "] board");
 }

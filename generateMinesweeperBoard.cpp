@@ -1,4 +1,4 @@
-#include <iostream>
+﻿#include <iostream>
 #include "generateMinesweeperBoard.h"
 using namespace std;
 int** generateMinesweeperBoard(int width, int height, int minesCount) {
@@ -66,6 +66,75 @@ int** generateMinesweeperBoard(int width, int height, int minesCount) {
 				++count;
 			}
 			if (i < height - 1 && j < width - 1 && layout[i + 1][j + 1] == -1) 
+			{
+				++count;
+			}
+			layout[i][j] = count;
+		}
+	}
+	return layout;
+}
+int** transformationMinesweeperBoard(char** board, int width, int height)
+{
+	int** layout = new int* [height];
+	for (int i = 0; i < height; ++i)
+	{
+		layout[i] = new int[width];
+		for (int j = 0; j < width; ++j)
+		{
+			layout[i][j] = 0;
+		}
+	}
+	for (int i = 0; i < height; ++i)
+	{
+		for (int j = 0; j < width; ++j)
+		{
+			if (board[i][j] == 'X')
+			{
+				layout[i][j] = -1;
+			}
+		}
+	}
+	// Fill in the numbers
+	for (int i = 0; i < height; ++i)
+	{
+		for (int j = 0; j < width; ++j)
+		{
+			if (layout[i][j] == -1)
+			{
+				layout[i][j] = -1;
+				continue;
+			}
+			int count = 0;
+			if (i > 0 && j > 0 && layout[i - 1][j - 1] == -1)
+			{
+				++count;
+			}
+			if (i > 0 && layout[i - 1][j] == -1)
+			{
+				++count;
+			}
+			if (i > 0 && j < width - 1 && layout[i - 1][j + 1] == -1)
+			{
+				++count;
+			}
+			if (j > 0 && layout[i][j - 1] == -1)
+			{
+				++count;
+			}
+			if (j < width - 1 && layout[i][j + 1] == -1)
+			{
+				++count;
+			}
+			if (i < height - 1 && j > 0 && layout[i + 1][j - 1] == -1)
+			{
+				++count;
+			}
+			if (i < height - 1 && layout[i + 1][j] == -1)
+			{
+				++count;
+			}
+			if (i < height - 1 && j < width - 1 && layout[i + 1][j + 1] == -1)
 			{
 				++count;
 			}

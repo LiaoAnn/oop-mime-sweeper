@@ -1,0 +1,22 @@
+     dxva2
+Debug:      dxva2
+     d3d11va
+Debug:      d3d11va
+     dxva2
+Debug:      dxva2
+     d3d11va
+Debug:      d3d11va
+     dxva2
+Debug:      dxva2
+     d3d11va
+Debug:      d3d11va
+     dxva2
+Debug:      dxva2
+     d3d11va
+Debug:      d3d11va
+Available HW decoding frameworks:
+Debug: Available HW decoding frameworks:
+     dxva2
+Debug:      dxva2
+     d3d11va
+Debug:      d3d11va

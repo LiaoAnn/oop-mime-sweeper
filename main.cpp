@@ -1,6 +1,6 @@
 #include <iostream>
 #include "RunMode.h"
-#include "qstring.h"
+#include <qstring.h>
 
 const QString COMMAND_FILE_MODE = "CommandFile";
 const QString COMMAND_INPUT_MODE = "CommandInput";

@@ -101,10 +101,10 @@
     <QtMoc Include="MineSweeperElement.h">
       <Filter>Header Files</Filter>
     </QtMoc>
-    <QtMoc Include="StartWindow.h">
+    <QtMoc Include="CommandLine.h">
       <Filter>Header Files</Filter>
     </QtMoc>
-    <QtMoc Include="CommandLine.h">
+    <QtMoc Include="StartWindow.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>
@@ -112,5 +112,10 @@
     <Image Include="boom.gif">
       <Filter>Resource Files</Filter>
     </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <QtUic Include="StartWindow.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
   </ItemGroup>
 </Project>
