@@ -26,9 +26,10 @@ bool ExecuteCommand(QStringList commandList)
 
 	if (commandName == LOAD_COMMAND)
 	{
-		if (GameGlobal::gameState == LOADING)
+		if (GameGlobal::gameState == STANDBY)
 		{
 			LoadCommand(commandList);
+			GameGlobal::loadedMap = true;
 			isSuccess = true;
 		}
 		else
@@ -38,7 +39,9 @@ bool ExecuteCommand(QStringList commandList)
 	}
 	else if (commandName == START_GAME_COMMAND)
 	{
-		if (GameGlobal::gameState == LOADING)
+		if (!GameGlobal::loadedMap)
+			isSuccess = false;
+		else if (GameGlobal::gameState == STANDBY)
 		{
 			GameGlobal::gameState = PLAYING;
 			isSuccess = true;
@@ -66,8 +69,7 @@ bool ExecuteCommand(QStringList commandList)
 		if (GameGlobal::gameState == PLAYING)
 		{
 			// Not implement
-			RightClick(commandList[1].toInt(), commandList[2].toInt());
-			isSuccess = true;
+			isSuccess = RightClick(commandList[1].toInt(), commandList[2].toInt());
 		}
 		else
 		{
@@ -78,7 +80,7 @@ bool ExecuteCommand(QStringList commandList)
 	{
 		if (GameGlobal::gameState == END)
 		{
-			GameGlobal::gameState = LOADING;
+			GameGlobal::gameState = STANDBY;
 			// Not implement
 			isSuccess = ResetMap();
 		}

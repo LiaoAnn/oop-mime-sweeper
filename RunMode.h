@@ -20,7 +20,7 @@ int RunCommandInput();
 
 enum GameState
 {
-	LOADING,
+	STANDBY,
 	PLAYING,
 	END
 };
@@ -28,4 +28,7 @@ enum GameState
 class GameGlobal {
 public:
 	static GameState gameState;
+	static bool loadedMap;
+	static bool isGameEnd;
+	static bool isGameWin;
 };
