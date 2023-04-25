@@ -9,6 +9,7 @@ int** layout;
 BaseMineSweeperElement*** objectList;
 int openedBlanks = 0;
 int mapBlanks = 0;
+int boomBlanks = 0;
 int mapRow = 0,
 mapCol = 0;
 
@@ -209,6 +210,11 @@ void GenerateMapRateMine(int row, int col, double mineRate)
 
 bool LeftClick(int row, int col)
 {
+	if (row < 0 || col < 0)
+		return false;
+	if (row >= mapRow || col >= mapCol)
+		return false;
+
 	BaseMineSweeperElement* curr = objectList[row][col];
 	if (curr->isFlagged() || curr->isConfused())
 		return false;
@@ -221,11 +227,15 @@ bool LeftClick(int row, int col)
 	{
 		std::cout << "You lose!" << std::endl;
 		GameGlobal::gameState = GameState::END;
+		GameGlobal::isGameEnd = true;
+		GameGlobal::isGameWin = false;
 	}
 	if (openedBlanks == mapBlanks)
 	{
 		std::cout << "You win!" << std::endl;
 		GameGlobal::gameState = GameState::END;
+		GameGlobal::isGameEnd = true;
+		GameGlobal::isGameWin = true;
 	}
 
 	return true;
@@ -233,11 +243,19 @@ bool LeftClick(int row, int col)
 
 bool RightClick(int row, int col)
 {
+	if (row < 0 || col < 0)
+		return false;
+	if (row >= mapRow || col >= mapCol)
+		return false;
+
 	BaseMineSweeperElement* curr = objectList[row][col];
 	if (curr->isSwept())
 		return false;
 	if (curr->isFlagged())
+	{
+		curr->unflag();
 		curr->setConfused(true);
+	}
 	else if (curr->isConfused())
 		curr->unconfuse();
 	else
@@ -292,20 +310,6 @@ QString PrintMap()
 
 	for (int i = 0; i < row; i++)
 	{
-		/*for (int j = 0; j < col; j++)
-		{
-			BaseMineSweeperElement* curr = objectList[i][j];
-			if (curr->isFlagged())
-				std::cout << "f";
-			else if (curr->isConfused())
-				std::cout << "?";
-			else if (curr->isSwept())
-				std::cout << curr->getValue();
-			else
-				std::cout << "#";
-			std::cout << " ";
-		}*/
-
 		for (int j = 0; j < col; j++)
 		{
 			BaseMineSweeperElement* curr = objectList[i][j];
@@ -375,10 +379,10 @@ QString PrintAnswer()
  */
 QString PrintGameState()
 {
-	if (GameGlobal::gameState == GameState::LOADING)
-		return "Loading";
+	if (GameGlobal::gameState == GameState::STANDBY)
+		return "Standby";
 	else if (GameGlobal::gameState == GameState::END)
-		return "End";
+		return "GameOver";
 	else if (GameGlobal::gameState == GameState::PLAYING)
 		return "Playing";
 
@@ -392,7 +396,20 @@ QString PrintGameState()
  */
 QString PrintBombCount()
 {
-	return "";
+	int bombCount = 0;
+	int row = mapRow;
+	int col = mapCol;
+	for (int i = 0; i < row; i++)
+	{
+		for (int j = 0; j < col; j++)
+		{
+			BaseMineSweeperElement* curr = objectList[i][j];
+			if (curr->getValue() == -1)
+				bombCount++;
+		}
+	}
+
+	return QString::number(bombCount);
 }
 
 /**
@@ -402,7 +419,19 @@ QString PrintBombCount()
  */
 QString PrintFlagCount()
 {
-	return "";
+	int flagCount = 0;
+	int row = mapRow;
+	int col = mapCol;
+	for (int i = 0; i < row; i++)
+	{
+		for (int j = 0; j < col; j++)
+		{
+			BaseMineSweeperElement* curr = objectList[i][j];
+			if (curr->isFlagged())
+				flagCount++;
+		}
+	}
+	return QString::number(flagCount);
 }
 
 /**
@@ -412,7 +441,8 @@ QString PrintFlagCount()
  */
 QString PrintOpenBlankCount()
 {
-	return "";
+	int openBlanks = openedBlanks;
+	return QString::number(openBlanks);
 }
 
 /**
@@ -422,5 +452,6 @@ QString PrintOpenBlankCount()
  */
 QString PrintRemainBlankCount()
 {
-	return "";
+	int remainBlanks = mapBlanks - openedBlanks;
+	return QString::number(remainBlanks);;
 }

@@ -1,7 +1,10 @@
 #include "RunMode.h"
 #include "CommandMode.h"
 
-GameState GameGlobal::gameState = LOADING;
+GameState GameGlobal::gameState = STANDBY;
+bool GameGlobal::isGameEnd = false;
+bool GameGlobal::isGameWin = false;
+bool GameGlobal::loadedMap = false;
 
 // GUI Mode
 int RunGUI(int argc, char* argv[])
@@ -36,7 +39,7 @@ int RunCommandFile(char* inputFileName, char* outputFileName)
 		{
 			// Execute command
 			isSuccess = (GameGlobal::gameState == GameState::END) ? true : false;
-			result = isSuccess ? "Success" : "Fail";
+			result = isSuccess ? "Success" : "Failed";
 
 			output = QString("<%1> : %2\r\n").arg(lines[i]).arg(result);
 			out << output;
@@ -51,14 +54,65 @@ int RunCommandFile(char* inputFileName, char* outputFileName)
 		{
 			printString = ExecutePrintCommand(commandList);
 
-			output = QString("<%1>%2\r\n").arg(lines[i], printString);
+			output = QString("<%1> : %2\r\n").arg(lines[i], printString);
 			out << output;
 		}
-		else {
+		else if (commandList[0] == LOAD_COMMAND) {
 			// Execute command
 			isSuccess = ExecuteCommand(commandList);
 
-			result = isSuccess ? "Success" : "Fail";
+			result = isSuccess ? "Success" : "Failed";
+			output = QString("<%1> : %2\r\n").arg(lines[i]).arg(result);
+			out << output;
+		} 
+		else if (commandList[0] == START_GAME_COMMAND)
+		{
+			isSuccess = ExecuteCommand(commandList);
+
+			result = isSuccess ? "Success" : "Failed";
+			output = QString("<%1> : %2\r\n").arg(lines[i]).arg(result);
+			out << output;
+		}
+		else if (commandList[0] == LEFT_CLICK_COMMAND)
+		{
+			isSuccess = ExecuteCommand(commandList);
+
+			result = isSuccess ? "Success" : "Failed";
+			output = QString("<%1> : %2\r\n").arg(lines[i]).arg(result);
+			out << output;
+
+			if (GameGlobal::isGameEnd)
+			{
+				if (GameGlobal::isGameWin)
+					output = QString("You win the game\r\n");
+				else
+					output = QString("You lose the game\r\n");
+				GameGlobal::isGameEnd = false;
+				GameGlobal::loadedMap = false;
+				out << output;
+			}
+		}
+		else if (commandList[0] == RIGHT_CLICK_COMMAND)
+		{
+			isSuccess = ExecuteCommand(commandList);
+
+			result = isSuccess ? "Success" : "Failed";
+			output = QString("<%1> : %2\r\n").arg(lines[i]).arg(result);
+			out << output;
+		}
+		else if (commandList[0] == REPLAY_COMMAND)
+		{
+			GameGlobal::loadedMap = false;
+			isSuccess = ExecuteCommand(commandList);
+
+			result = isSuccess ? "Success" : "Failed";
+			output = QString("<%1> : %2\r\n").arg(lines[i]).arg(result);
+			out << output;
+		}
+		else
+		{
+			isSuccess = false;
+			result = "Failed";
 			output = QString("<%1> : %2\r\n").arg(lines[i]).arg(result);
 			out << output;
 		}
@@ -92,7 +146,7 @@ int RunCommandInput()
 			// Execute command
 			isSuccess = ExecuteCommand(commandList);
 
-			result = isSuccess ? "Success" : "Fail";
+			result = isSuccess ? "Success" : "Failed";
 			output = QString("<%1> : %2\r\n").arg(line).arg(result);
 			std::cout << output.toStdString();
 		}
