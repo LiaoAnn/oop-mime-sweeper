@@ -1,3 +1,11 @@
+/***********************************************************************
+ * File: GameWindow.cpp
+ * Author: ¹ù§Ê¦w
+ * Create Date: 2023/04/16
+ * Editor: ¹ù§Ê¦w¡B¼BÄ£®¦
+ * Update Date: 2023/04/26
+ * Description: Game Window
+***********************************************************************/
 #include <iostream>
 #include <QTimer>
 #include <QMessageBox>
@@ -8,7 +16,10 @@
 #include "generateMinesweeperBoard.h"
 #include "StartWindow.h"
 #include "Positioin.h"
-
+ 
+// Intent: Constructor
+// Pre: parent, from is QT windwos , board is a int pointer , width, height, mines are int
+// Post: no return
 GameWindow::GameWindow(QWidget* parent, StartWindow* from, int** board, int width, int height, int mines) : QMainWindow(parent)
 {
 
@@ -38,21 +49,23 @@ GameWindow::GameWindow(QWidget* parent, StartWindow* from, int** board, int widt
 	// Set up  Background Music
 	bgmOutput = new QAudioOutput(this);
 	bgmOutput->setVolume(0.05);
-	lastWindow->bgm->setAudioOutput(bgmOutput);
-	lastWindow->bgm->play();
+	lastWindow->bgmPlayer->setAudioOutput(bgmOutput);
+	lastWindow->bgmPlayer->play();
 	// Set up Sound Effect
 	clickOutput = new QAudioOutput(this);
 	clickOutput->setVolume(0.1);
 	boomOutput = new QAudioOutput(this);
 	boomOutput->setVolume(0.1);
-	lastWindow->click->setAudioOutput(clickOutput);
-	lastWindow->boom->setAudioOutput(boomOutput);
-}
-
+	lastWindow->clickPlayer->setAudioOutput(clickOutput);
+	lastWindow->boomPlayer->setAudioOutput(boomOutput);
+} 
+// Intent: Destructor
+// Pre: no variable requiremnet
+// Post: no return
 GameWindow::~GameWindow()
 {
 	// Stop the BGM
-	lastWindow->bgm->stop();
+	lastWindow->bgmPlayer->stop();
 	// Delete all the objects
 	for (int i = 0; i < mapHeight; i++)
 		delete objectList[i];
@@ -61,6 +74,9 @@ GameWindow::~GameWindow()
 		delete layout[i];
 	delete layout;
 }
+// Intent: intercept the close event
+// Pre: event is a QCloseEvent pointer
+// Post: no return
 void GameWindow::closeEvent(QCloseEvent* event)
 {
 	if (status)
@@ -74,6 +90,9 @@ void GameWindow::closeEvent(QCloseEvent* event)
 	// Show the Start window
 	lastWindow->show();
 }
+// Intent: print the GameBoard
+// Pre: no variable requiremnet
+// Post: no return
 void  GameWindow::drawOut()
 {
 	int mineCount = 0;
@@ -101,11 +120,12 @@ void  GameWindow::drawOut()
 		}
 	}
 }
-
+// Intent: button sweep event slot function
+// Pre: a MineSweeperElement pointer as sender will be passed in, no variable requiremnet
+// Post: no return
 void GameWindow::onButtonLeftClicked()
 {
-	QMediaPlayer* player = new QMediaPlayer(this);
-	lastWindow->click->play();
+	lastWindow->clickPlayer->play();
 	MineSweeperElement* button = qobject_cast<MineSweeperElement*>(sender());
 	if (!status)
 	{
@@ -153,7 +173,7 @@ void GameWindow::onButtonLeftClicked()
 	if (returnSignal == -1)
 	{
 		status = 0;
-		lastWindow->boom->play();
+		lastWindow->boomPlayer->play();
 		for (int i = 0; i < mapMines; i++)
 		{
 			mineList[i]->setChecked(true);
@@ -182,10 +202,13 @@ void GameWindow::onButtonLeftClicked()
 		}
 	}
 }
+// Intent: button flag event slot function
+// Pre: a MineSweeperElement pointer as sender will be passed in, no variable requiremnet
+// Post: no return
 void GameWindow::onButtonRightClicked()
 {
 	QMediaPlayer* player = new QMediaPlayer(this);
-	lastWindow->click->play();
+	lastWindow->clickPlayer->play();
 
 	MineSweeperElement* button = qobject_cast<MineSweeperElement*>(sender());
 	if (!status)
@@ -205,8 +228,12 @@ void GameWindow::onButtonRightClicked()
 		return;
 	}
 }
+// Intent: button sweep 
+// Pre: button is a MineSweeperElement pointer
+// Post: return the number of swept buttons
 int GameWindow::buttonSweep(MineSweeperElement* button)
 {
+	// actually already check if the button is swept in the onButtonLeftClicked function , but still check here for safety
 	int sweptCount = 0;
 	if (button->isSwept() == false)
 	{
@@ -230,6 +257,9 @@ int GameWindow::buttonSweep(MineSweeperElement* button)
 	}
 	return sweptCount;
 }
+// Intent: button diffusion
+// Pre: button is a MineSweeperElement pointer
+// Post: return the number of swept buttons
 int GameWindow::buttonDiffusion(MineSweeperElement* button)
 {
 	int sweptCount = 0;
@@ -257,6 +287,9 @@ int GameWindow::buttonDiffusion(MineSweeperElement* button)
 		sweptCount += buttonSweep(objectList[position.y + 1][position.x]);
 	return sweptCount;
 }
+// Intent: button sign
+// Pre: button is a MineSweeperElement pointer
+// Post: return 1 if the button is flagged, return -1 if the button is confused, return 0 if the button is unflagged
 int GameWindow::buttonSign(MineSweeperElement* button)
 {
 
@@ -277,6 +310,9 @@ int GameWindow::buttonSign(MineSweeperElement* button)
 		return 1;
 	}
 }
+// Intent: print the game board on the console
+// Pre: no variable requirement
+// Post: no return
 void GameWindow::printGameBoard()
 {
 	std::cout << "<Print GameBoard> : " << std::endl;
@@ -299,6 +335,9 @@ void GameWindow::printGameBoard()
 		std::cout << std::endl;
 	}
 }
+// Intent: print the game state on the console
+// Pre: no variable requirement
+// Post: no return
 void GameWindow::printGameState()
 {
 	std::cout << "<Print GameState> : " << std::endl;
@@ -307,7 +346,9 @@ void GameWindow::printGameState()
 	else
 		std::cout << "GameOver" << std::endl;
 }
-
+// Intent: print the game answer on the console
+// Pre: no variable requirement
+// Post: no return
 void GameWindow::printGameAnswer()
 {
 	std::cout << "<Print GameAnswer> : " << std::endl;
@@ -324,23 +365,33 @@ void GameWindow::printGameAnswer()
 		std::cout << std::endl;
 	}
 }
+// Intent: print the game map on the console
+// Pre: no variable requirement
+// Post: no return
 void GameWindow::printBombCount()
 {
 	std::cout << "<Print BombCount> : " << std::endl;
 	std::cout << mapMines << std::endl;
 }
-
+// Intent: print the game map on the console
+// Pre: no variable requirement
+// Post: no return
 void GameWindow::printOpenBlankCount()
 {
 	std::cout << "<Print OpenBlankCount> : " << std::endl;
 	std::cout << openedBlanks << std::endl;
 }
-
+// Intent: print the game map on the console
+// Pre: no variable requirement
+// Post: no return
 void GameWindow::printRemainBlankCount()
 {
 	std::cout << "<Print RemainBlankCount> : " << std::endl;
 	std::cout << mapBlanks - openedBlanks << std::endl;
 }
+// Intent: print the game map on the console
+// Pre: no variable requirement
+// Post: no return
 void GameWindow::printFlagCount()
 {
 	std::cout << "<Print FlagCount> : " << std::endl;

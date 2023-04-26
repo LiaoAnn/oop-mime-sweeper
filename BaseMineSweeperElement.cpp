@@ -1,3 +1,11 @@
+/***********************************************************************
+ * File: BaseMineSweeperElement.cpp
+ * Author: ¹ù§Ê¦w
+ * Create Date: 2023/04/16
+ * Editor: ÃÓªÃ®a¡B¹ù§Ê¦w
+ * Update Date: 2023/04/26
+ * Description: Command map
+***********************************************************************/
 #include "BaseMineSweeperElement.h"
 #include "BaseMineSweeperInput.h"
 

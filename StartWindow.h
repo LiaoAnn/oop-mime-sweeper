@@ -1,6 +1,15 @@
+/***********************************************************************
+ * File: StartWindow.h
+ * Author: ¼BÄ£®¦
+ * Create Date: 2023/04/16
+ * Editor: ¼BÄ£®¦
+ * Update Date: 2023/04/26
+ * Description: The header file of StartWindow.cpp
+***********************************************************************/
 #pragma once
+#ifndef StartWindow_H
+#define StartWindow_H
 #include <QtWidgets/QMainWindow>
-#include "ui_QtWidgetsApplication.h"
 #include <QSpinBox>
 #include <QLabel>
 #include <QUrl>
@@ -9,11 +18,11 @@
 #include <QLineEdit>
 #include <qradiobutton.h>
 #include <QtMultimedia/QMediaPlayer>
-#include "ui_StartWindow.h"
+#include "ui_QtWidgetsApplication.h"
+
 class StartWindow : public QMainWindow
 {
 	Q_OBJECT
-
 public:
 	StartWindow(QWidget* parent = nullptr);
 	~StartWindow();
@@ -25,25 +34,26 @@ public:
 	void browseFile();
 	void sourceMode();
 	void loadFile();	
-	//void ramdomMode();
 	QSpinBox* widthBox;
 	QSpinBox* heightBox;
 	QDoubleSpinBox* minesBox;
 	QComboBox* mineUnitBox;
 	QLineEdit* lineEdit;
-	QRadioButton* radioBtn1;
-	QRadioButton* radioBtn2;
-	QGroupBox* groupBox;
-	QGroupBox* groupBox2;
-	QMediaPlayer* bgm = nullptr;
-	QMediaPlayer* click = nullptr;
-	QMediaPlayer* boom = nullptr;
+	QRadioButton* gen_RB;
+	QRadioButton* lfd_RB;
+	QGroupBox* generateBox;
+	QGroupBox* readfileBox;
+	QMediaPlayer* bgmPlayer = nullptr;
+	QMediaPlayer* clickPlayer = nullptr;
+	QMediaPlayer* boomPlayer = nullptr;
 	Ui::QtWidgetsApplicationClass ui;
 private:
 	int width = 10;
 	int height = 10;
-	bool minesUnit = false;
+	bool minesUnit = false; // false = s , true = %
 	double mines = 10;
 	int** layout = nullptr;
-	bool canStart = 0;
+	bool canStart = 0; // check if the game can start
 };
+#endif
+

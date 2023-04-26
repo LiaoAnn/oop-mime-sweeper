@@ -1,3 +1,11 @@
+/***********************************************************************
+ * File: RunMode.cpp
+ * Author: ÃÓªÃ®a
+ * Create Date: 2023/04/16
+ * Editor: ÃÓªÃ®a¡B¹ù§Ê¦w
+ * Update Date: 2023/04/26
+ * Description: Run mode selection
+***********************************************************************/
 #include "RunMode.h"
 #include "CommandMode.h"
 

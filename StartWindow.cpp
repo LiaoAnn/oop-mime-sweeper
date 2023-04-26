@@ -1,21 +1,19 @@
+/***********************************************************************
+ * File: StartWindow.cpp
+ * Author: ¼BÄ£®¦
+ * Create Date: 2023/04/16
+ * Editor: ¼BÄ£®¦
+ * Update Date: 2023/04/26
+ * Description:  The source file of StartWindow.h
+***********************************************************************/
 #include "StartWindow.h"
-#include "ui_StartWindow.h"
-#include "qpushbutton.h"
 #include "GameWindow.h"
+#include "generateMinesweeperBoard.h"
 #include <QApplication>
-#include <QSpinBox>
-#include <QLabel>
-#include <QUrl>
-#include <qcombobox.h>
-#include <qgroupbox.h>
-#include <QLineEdit>
 #include <QFileDialog>
 #include <qmessagebox.h>
-#include <qradiobutton.h>
-#include "generateMinesweeperBoard.h"
 #include <fstream>
 #include <iostream>
-#include <QtMultimedia/QMediaPlayer>
 
 StartWindow::StartWindow(QWidget* parent) : QMainWindow(parent)
 {
@@ -28,18 +26,19 @@ StartWindow::StartWindow(QWidget* parent) : QMainWindow(parent)
 	// Custom window	
 	this->setFixedSize(800, 300);
 	this->setWindowTitle("Minesweeper");
-	groupBox = new QGroupBox(this);
-	groupBox->setGeometry(QRect(QPoint(20, 10), QSize(760, 80)));
-	QLabel* label_Column = new QLabel("Column", groupBox);
+	// Set All Buttons and Boxes
+	generateBox = new QGroupBox(this);
+	generateBox->setGeometry(QRect(QPoint(20, 10), QSize(760, 80)));
+	QLabel* label_Column = new QLabel("Column", generateBox);
 	label_Column->setAlignment(Qt::AlignCenter);
 	label_Column->setGeometry(QRect(QPoint(20, 20), QSize(60, 30)));
-	QLabel* label_Row = new QLabel("Row", groupBox);
+	QLabel* label_Row = new QLabel("Row", generateBox);
 	label_Row->setAlignment(Qt::AlignCenter);
 	label_Row->setGeometry(QRect(QPoint(180, 20), QSize(60, 30)));
-	QLabel* label_Mines = new QLabel("Mines", groupBox);
+	QLabel* label_Mines = new QLabel("Mines", generateBox);
 	label_Mines->setAlignment(Qt::AlignCenter);
 	label_Mines->setGeometry(QRect(QPoint(340, 20), QSize(60, 30)));
-	widthBox = new QSpinBox(groupBox);
+	widthBox = new QSpinBox(generateBox);
 	widthBox->setRange(1, 40);
 	widthBox->setSingleStep(1);
 	widthBox->setValue(10);
@@ -48,7 +47,7 @@ StartWindow::StartWindow(QWidget* parent) : QMainWindow(parent)
 	widthBox->setKeyboardTracking(false);
 	widthBox->setGeometry(QRect(QPoint(80, 20), QSize(100, 30)));
 	this->widthBox = widthBox;
-	heightBox = new QSpinBox(groupBox);
+	heightBox = new QSpinBox(generateBox);
 	heightBox->setRange(1, 40);
 	heightBox->setSingleStep(1);
 	heightBox->setValue(10);
@@ -57,7 +56,7 @@ StartWindow::StartWindow(QWidget* parent) : QMainWindow(parent)
 	heightBox->setKeyboardTracking(false);
 	heightBox->setGeometry(QRect(QPoint(240, 20), QSize(100, 30)));
 	this->heightBox = heightBox;
-	minesBox = new QDoubleSpinBox(groupBox);
+	minesBox = new QDoubleSpinBox(generateBox);
 	minesBox->setRange(1, 100);
 	minesBox->setSingleStep(1);
 	minesBox->setValue(10);
@@ -67,29 +66,29 @@ StartWindow::StartWindow(QWidget* parent) : QMainWindow(parent)
 	minesBox->setKeyboardTracking(false);
 	minesBox->setGeometry(QRect(QPoint(400, 20), QSize(100, 30)));
 	this->minesBox = minesBox;
-	mineUnitBox = new QComboBox(groupBox);
+	mineUnitBox = new QComboBox(generateBox);
 	mineUnitBox->addItem("Mines");
 	mineUnitBox->addItem("Mines%");
 	mineUnitBox->setGeometry(QRect(QPoint(510, 20), QSize(100, 30)));
-	groupBox2 = new QGroupBox(this);
-	groupBox2->setGeometry(QRect(QPoint(20, 100), QSize(760, 90)));
-	groupBox2->setDisabled(true);
-	lineEdit = new QLineEdit(groupBox2);
+	readfileBox = new QGroupBox(this);
+	readfileBox->setGeometry(QRect(QPoint(20, 100), QSize(760, 90)));
+	readfileBox->setDisabled(true);
+	lineEdit = new QLineEdit(readfileBox);
 	lineEdit->setGeometry(QRect(QPoint(20, 20), QSize(670, 30)));
-	QPushButton* BrowseBtn = new QPushButton("Browse", groupBox2);
+	QPushButton* BrowseBtn = new QPushButton("Browse", readfileBox);
 	BrowseBtn->setGeometry(QRect(QPoint(690, 20), QSize(50, 30)));
 	QGroupBox* groupBox3 = new QGroupBox(this);
 	groupBox3->setGeometry(QRect(QPoint(20, 200), QSize(760, 90)));
-	radioBtn1 = new QRadioButton("Random mode", groupBox3);
-	radioBtn1->setGeometry(QRect(QPoint(20, 20), QSize(120, 30)));
-	radioBtn1->setChecked(true);
-	radioBtn2 = new QRadioButton("File mode", groupBox3);
-	radioBtn2->setGeometry(QRect(QPoint(180, 20), QSize(100, 30)));
+	gen_RB = new QRadioButton("Random mode", groupBox3);
+	gen_RB->setGeometry(QRect(QPoint(20, 20), QSize(120, 30)));
+	gen_RB->setChecked(true);
+	lfd_RB = new QRadioButton("File mode", groupBox3);
+	lfd_RB->setGeometry(QRect(QPoint(180, 20), QSize(100, 30)));
 	QPushButton* button2 = new QPushButton("Load", groupBox3);
 	button2->setGeometry(QRect(QPoint(500, 20), QSize(100, 30)));
 	QPushButton* button = new QPushButton("Start", groupBox3);
 	button->setGeometry(QRect(QPoint(620, 20), QSize(100, 30)));
-	
+
 	// Connect signals and slots
 	connect(button, &QPushButton::clicked, this, &StartWindow::Startgame);
 	connect(widthBox, &QSpinBox::valueChanged, this, &StartWindow::setWidth);
@@ -97,25 +96,30 @@ StartWindow::StartWindow(QWidget* parent) : QMainWindow(parent)
 	connect(minesBox, &QDoubleSpinBox::valueChanged, this, &StartWindow::setMines);
 	connect(mineUnitBox, &QComboBox::currentIndexChanged, this, &StartWindow::setMinesUnit);
 	connect(BrowseBtn, &QPushButton::clicked, this, &StartWindow::browseFile);
-	connect(radioBtn1, &QRadioButton::clicked, this, &StartWindow::sourceMode);
-	connect(radioBtn2, &QRadioButton::clicked, this, &StartWindow::sourceMode);
+	connect(gen_RB, &QRadioButton::clicked, this, &StartWindow::sourceMode);
+	connect(lfd_RB, &QRadioButton::clicked, this, &StartWindow::sourceMode);
 	connect(button2, &QPushButton::clicked, this, &StartWindow::loadFile);
-	// Set default values
-	bgm = new QMediaPlayer(this);
-	bgm->setSource(QUrl::fromLocalFile("bgm.wav"));
-	bgm->setLoops(-1);
-	click = new QMediaPlayer(this);
-	click->setSource(QUrl::fromLocalFile("click.wav"));
-	boom = new QMediaPlayer(this);
-	boom->setSource(QUrl::fromLocalFile("boom.wav"));
-	system("cls");
+	// Load BGM and sound effects
+	bgmPlayer = new QMediaPlayer(this);
+	bgmPlayer->setSource(QUrl::fromLocalFile("bgm.wav"));
+	bgmPlayer->setLoops(-1);
+	clickPlayer = new QMediaPlayer(this);
+	clickPlayer->setSource(QUrl::fromLocalFile("click.wav"));
+	boomPlayer = new QMediaPlayer(this);
+	boomPlayer->setSource(QUrl::fromLocalFile("boom.wav"));
+	system("cls"); // clear the console
 }
+
 StartWindow::~StartWindow()
 {
 
 }
+// Intent: to start the game
+// Pre: no variable requirement
+// Post: no return
 void StartWindow::Startgame()
 {
+	// if no board loaded, then cannot start
 	if (!canStart)
 	{
 		QMessageBox::warning(this, tr("Warning"), tr("No Board Loaded"));
@@ -130,21 +134,33 @@ void StartWindow::Startgame()
 	window->show();
 	window->drawOut();
 	canStart = false;
+	this->setWindowTitle("Minesweeper");
+	// give the ownership of the layout to the game window
 	layout = nullptr;
+	// hide the start window
 	this->hide();
 }
+// Intent: change the width of the board
+// Pre: the event slot of the width box
+// Post: no return
 void StartWindow::setWidth()
 {
 	this->width = this->widthBox->value();
 	if (!minesUnit)
 		minesBox->setRange(1, width * height);
 }
+// Intent: change the height of the board
+// Pre: the event slot of the height box
+// Post: no return
 void StartWindow::setHeight()
 {
 	this->height = this->heightBox->value();
 	if (!minesUnit)
 		minesBox->setRange(1, width * height);
 }
+// Intent: change the number of mines of the board
+// Pre: the event slot of the mines box
+// Post: no return
 void StartWindow::setMines()
 {
 	if (minesUnit)
@@ -152,11 +168,15 @@ void StartWindow::setMines()
 	else
 		this->mines = this->minesBox->value();
 }
+// Intent: change the mine unit of the board generation process
+// Pre: the event slot of the mine unit box
+// Post: no return
 void StartWindow::setMinesUnit()
 {
 
 	if (mineUnitBox->currentIndex() == 0)
 	{
+		// change the range of the mines box to [1, width * height], and the step to 1
 		minesUnit = false;
 		minesBox->setDecimals(0);
 		minesBox->setRange(1, width * height);
@@ -165,6 +185,7 @@ void StartWindow::setMinesUnit()
 	}
 	else
 	{
+		// change the range of the mines box to [0, 1], and the step to 0.05
 		minesUnit = true;
 		minesBox->setDecimals(2);
 		minesBox->setRange(0, 1);
@@ -173,29 +194,36 @@ void StartWindow::setMinesUnit()
 	}
 	setMines();
 }
-
+// Intent: to browse a file
+// Pre: the event slot of the browse button
+// Post: no return
 void StartWindow::browseFile()
 {
 	QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"), "", tr("Text Files (*.txt)"));
 	lineEdit->setText(fileName);
 }
-
+// Intent: to change the source mode
+// Pre: the event slot of the radio buttons
+// Post: no return
 void StartWindow::sourceMode()
 {
-	if (radioBtn1->isChecked())
+	if (gen_RB->isChecked())
 	{
-		groupBox->setDisabled(false);
-		groupBox2->setDisabled(true);
+		generateBox->setDisabled(false);
+		readfileBox->setDisabled(true);
 	}
 	else
 	{
-		groupBox->setDisabled(true);
-		groupBox2->setDisabled(false);
+		generateBox->setDisabled(true);
+		readfileBox->setDisabled(false);
 	}
 }
+// Intent: to load a file
+// Pre: the event slot of the load button
+// Post: no return
 void StartWindow::loadFile()
 {
-	if (radioBtn1->isChecked())
+	if (gen_RB->isChecked())
 	{
 		layout = generateMinesweeperBoard(width, height, mines);
 		if (!minesUnit)
@@ -205,7 +233,7 @@ void StartWindow::loadFile()
 		canStart = 1;
 	}
 	else
-	{
+	{			
 		std::ifstream file(lineEdit->text().toStdString());
 		if (!file.is_open())
 		{
@@ -237,5 +265,6 @@ void StartWindow::loadFile()
 		std::cout << "<Load BoardFile " << lineEdit->text().toStdString() << "> : Success" << std::endl;
 		canStart = 1;
 	}
+	// set the window title
 	this->setWindowTitle("Loaded " + QString::number(height) + "*" + QString::number(width) + "[" + QString::number(mines) + "] board");
 }

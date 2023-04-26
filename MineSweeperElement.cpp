@@ -1,4 +1,12 @@
-﻿#include "./MineSweeperElement.h"
+﻿/***********************************************************************
+ * File: MineSweeperElement.cpp
+ * Author: 廖廷安
+ * Create Date: 2023/04/16
+ * Editor: 廖廷安、劉耀恩
+ * Update Date: 2023/04/26
+ * Description:  minesweeper element class
+***********************************************************************/
+#include "./MineSweeperElement.h"
 #include "./MineSweeperInput.h"
 #include "./Positioin.h"
 #include "GameWindow.h"

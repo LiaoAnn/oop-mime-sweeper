@@ -1,4 +1,14 @@
+/***********************************************************************
+ * File: BaseMineSweeperElement.h
+ * Author: ¹ù§Ê¦w
+ * Create Date: 2023/04/16
+ * Editor: ¹ù§Ê¦w¡BÃÓªÃ®a
+ * Update Date: 2023/04/26
+ * Description: Command map
+***********************************************************************/
 #pragma once
+#ifndef BaseMineSweeperElement_H
+#define BaseMineSweeperElement_H
 
 #include "BaseMineSweeperInput.h"
 #include <string>
@@ -41,3 +51,4 @@ public:
 	void setFlagged(bool isFlagged);
 	void setConfused(bool isConfused);
 };
+#endif

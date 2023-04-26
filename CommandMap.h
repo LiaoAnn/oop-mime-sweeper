@@ -1,5 +1,14 @@
+/***********************************************************************
+ * File: CommandMap.h
+ * Author: ÃÓªÃ®a
+ * Create Date: 2023/04/16
+ * Editor: ÃÓªÃ®a¡B¹ù§Ê¦w
+ * Update Date: 2023/04/26
+ * Description: Command Map header
+***********************************************************************/
 #pragma once
-
+#ifndef CommandMap_H
+#define CommandMap_H
 #include "MineSweeperElement.h"
 #include "CommandMode.h"
 #include "MineSweeperElement.h"
@@ -20,5 +29,6 @@ QString PrintBombCount();
 QString PrintFlagCount();
 QString PrintOpenBlankCount();
 QString PrintRemainBlankCount();
+#endif
 
 

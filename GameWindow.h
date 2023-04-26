@@ -1,4 +1,15 @@
+/***********************************************************************
+ * File: GameWindow.h
+ * Author: ¹ù§Ê¦w
+ * Create Date: 2023/04/16
+ * Editor: ¹ù§Ê¦w¡B¼BÄ£®¦
+ * Update Date: 2023/04/26
+ * Description: Game Window header
+***********************************************************************/
 #pragma once
+#ifndef GameWindow_H
+#define GameWindow_H
+
 #include <QMainWindow>
 #include <QtMultimedia/QMediaPlayer>
 #include <QtMultimedia/QAudioOutput>
@@ -45,3 +56,4 @@ private:
 	StartWindow* lastWindow;
 	Ui::QtWidgetsApplicationClass ui;
 };
+#endif

@@ -90,14 +90,12 @@
     <ClCompile Include="RunMode.cpp" />
     <ClCompile Include="StartWindow.cpp" />
     <QtRcc Include="QtWidgetsApplication.qrc" />
-    <QtUic Include="QtWidgetsApplication.ui" />
     <QtMoc Include="GameWindow.h" />
-    <ClCompile Include="generateMinesweeperBoard.cpp" />
+    <ClCompile Include="GenerateMinesweeperBoard.cpp" />
     <ClCompile Include="MineSweeperElement.cpp" />
     <ClCompile Include="GameWindow.cpp" />
     <ClCompile Include="main.cpp" />
     <None Include="0414.ico" />
-    <QtUic Include="StartWindow.ui" />
     <ResourceCompile Include="0414.rc" />
   </ItemGroup>
   <ItemGroup>
@@ -109,7 +107,7 @@
     <ClInclude Include="RunMode.h" />
     <QtMoc Include="StartWindow.h" />
     <QtMoc Include="MineSweeperElement.h" />
-    <ClInclude Include="generateMinesweeperBoard.h" />
+    <ClInclude Include="GenerateMinesweeperBoard.h" />
     <ClInclude Include="MineSweeperInput.h" />
     <ClInclude Include="Positioin.h" />
   </ItemGroup>

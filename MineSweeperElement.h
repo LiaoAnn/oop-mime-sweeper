@@ -1,4 +1,14 @@
-﻿#pragma once
+﻿/***********************************************************************
+ * File: MineSweeperElement.h
+ * Author: 廖廷安
+ * Create Date: 2023/04/16
+ * Editor: 廖廷安、劉耀恩
+ * Update Date: 2023/04/26
+ * Description:  minesweeper element class
+***********************************************************************/
+#pragma once
+#ifndef MineSweeperElement_H
+#define MineSweeperElement_H
 
 #include "MineSweeperInput.h"
 #include "qpushbutton.h"
@@ -43,3 +53,4 @@ public:
 	void setBackGroundColor(QString);
 	void setTextColor(QString);
 };
+#endif

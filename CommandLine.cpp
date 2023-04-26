@@ -1,3 +1,11 @@
+/***********************************************************************
+ * File: CommandLine.cpp
+ * Author: ÃÓªÃ®a
+ * Create Date: 2023/04/16
+ * Editor: ÃÓªÃ®a¡B¹ù§Ê¦w
+ * Update Date: 2023/04/26
+ * Description: Command Line reader
+***********************************************************************/
 #include "CommandLine.h"
 
 CommandLine::CommandLine(QObject* parent)

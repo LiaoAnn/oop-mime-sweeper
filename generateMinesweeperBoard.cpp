@@ -1,6 +1,18 @@
-﻿#include <iostream>
+﻿/***********************************************************************
+ * File: generateMinesweeperBoard.cpp
+ * Author: 劉耀恩
+ * Create Date: 2023/04/16
+ * Editor: 劉耀恩
+ * Update Date: 2023/04/26
+ * Description: board generator
+***********************************************************************/
+#include <iostream>
 #include "generateMinesweeperBoard.h"
-using namespace std;
+using namespace std; 
+
+// Intent: generate a minesweeper board
+// Pre:  width, height, minesCount are all positive integers
+// Post: return a 2D array of integers with already sign the mines and numbers
 int** generateMinesweeperBoard(int width, int height, int minesCount) {
 	// Create the board
 	int** layout = new  int* [height];
@@ -73,7 +85,10 @@ int** generateMinesweeperBoard(int width, int height, int minesCount) {
 		}
 	}
 	return layout;
-}
+} 
+// Intent: transform a char board to a int board
+// Pre: width, height are all positive integers
+// Post: return a 2D array of integers with already sign the mines and numbers
 int** transformationMinesweeperBoard(char** board, int width, int height)
 {
 	int** layout = new int* [height];

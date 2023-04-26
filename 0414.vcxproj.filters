@@ -26,9 +26,6 @@
     <QtRcc Include="QtWidgetsApplication.qrc">
       <Filter>Resource Files</Filter>
     </QtRcc>
-    <QtUic Include="QtWidgetsApplication.ui">
-      <Filter>Form Files</Filter>
-    </QtUic>
     <QtMoc Include="GameWindow.h">
       <Filter>Header Files</Filter>
     </QtMoc>
@@ -49,7 +46,7 @@
     <ClCompile Include="MineSweeperElement.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="generateMinesweeperBoard.cpp">
+    <ClCompile Include="GenerateMinesweeperBoard.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="StartWindow.cpp">
@@ -78,7 +75,7 @@
     <ClInclude Include="Positioin.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="generateMinesweeperBoard.h">
+    <ClInclude Include="GenerateMinesweeperBoard.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="RunMode.h">
@@ -112,10 +109,5 @@
     <Image Include="boom.gif">
       <Filter>Resource Files</Filter>
     </Image>
-  </ItemGroup>
-  <ItemGroup>
-    <QtUic Include="StartWindow.ui">
-      <Filter>Form Files</Filter>
-    </QtUic>
   </ItemGroup>
 </Project>

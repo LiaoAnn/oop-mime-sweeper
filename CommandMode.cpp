@@ -1,7 +1,14 @@
+/***********************************************************************
+ * File: CommandMode.cpp
+ * Author: ÃÓªÃ®a
+ * Create Date: 2023/04/16
+ * Editor: ÃÓªÃ®a¡B¹ù§Ê¦w
+ * Update Date: 2023/04/26
+ * Description: Command mode
+***********************************************************************/
 #include "CommandMode.h"
 #include "CommandMap.h"
 #include "RunMode.h"
-
 
 QStringList LoadFile(QString fileName)
 {
